@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using JetBrains.Annotations;
 
 namespace Dawn
 {
@@ -919,13 +919,11 @@ namespace Dawn
                 bool EnumeratingContainsNull(TCollection collection)
                 {
                     if (collectionType != collection!.GetType())
+                    {
                         return ProxyContainsNull(collection);
+                    }
 
-                    foreach (var item in collection)
-                        if (item is null)
-                            return true;
-
-                    return false;
+                    return collection.Cast<object?>().Any(item => item is null);
                 }
 
                 static bool ProxyContainsNull(TCollection collection)
@@ -1068,21 +1066,34 @@ namespace Dawn
             /// </returns>
             private static Type? GetItemType()
             {
-                return GetItemType(typeof(TCollection));
+                return GetItemTypeInternal(typeof(TCollection));
 
-                static Type? GetItemType(Type collectionType)
+                static Type? GetItemTypeInternal(Type collectionType)
                 {
                     var openType = typeof(IEnumerable<>);
-                    foreach (var interfaceType in collectionType.GetInterfaces())
-                        if (interfaceType.IsGenericType(openType))
-                            return interfaceType.GetGenericArguments()[0];
+
+                    var interfaceType = Array.Find(collectionType.GetInterfaces(), i => i.IsGenericType(openType));
+                    if (interfaceType != null)
+                    {
+                        return interfaceType.GetGenericArguments()[0];
+                    }
+
+                    ////foreach (var interfaceType in collectionType.GetInterfaces())
+                    ////{
+                    ////    if (interfaceType.IsGenericType(openType))
+                    ////    {
+                    ////        return interfaceType.GetGenericArguments()[0];
+                    ////    }
+                    ////}
 
                     if (collectionType.IsGenericType(openType))
+                    {
                         return collectionType.GetGenericArguments()[0];
+                    }
 
                     var baseType = collectionType.GetBaseType();
                     return baseType != null
-                        ? GetItemType(baseType)
+                        ? GetItemTypeInternal(baseType)
                         : null;
                 }
             }
@@ -1145,9 +1156,7 @@ namespace Dawn
 
                         if (collection is IEnumerable<TItem> typed)
                         {
-                            foreach (var current in typed)
-                                if (comparer.Equals(current, item))
-                                    return true;
+                            return typed.Any(current => comparer.Equals(current, item));
                         }
                         else
                         {
@@ -1166,6 +1175,11 @@ namespace Dawn
                         Collection.CachedContainsFunctionsLocker.EnterUpgradeableReadLock();
                         try
                         {
+                            if (collection == null)
+                            {
+                                return false;
+                            }
+
                             var key = (collection.GetType(), typeof(TItem));
                             if (!Collection.CachedContainsFunctions.TryGetValue(key, out var del))
                             {

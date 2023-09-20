@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dawn;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Dawn;
 
 namespace Dawn.Utils
 {
@@ -16,7 +16,7 @@ namespace Dawn.Utils
     {
         private static readonly Encoding Encoding = new UTF8Encoding(false);
 
-        public Snippet(MethodInfo method, GuardFunctionAttribute attribute, string shortcut)
+        protected Snippet(MethodInfo method, GuardFunctionAttribute attribute, string shortcut)
         {
             Method = method;
             Attribute = attribute;
@@ -44,8 +44,8 @@ namespace Dawn.Utils
                     g.SelectMany(p => VisualStudioSnippet.CreateSnippets(p.Key, p.Value)));
 
                 var document = VisualStudioSnippet.CreateDocument(snippets);
-                using var file = File.Create(Path.Combine(directory, name));
-                using var writer = new StreamWriter(file, Encoding);
+                await using var file = File.Create(Path.Combine(directory, name));
+                await using var writer = new StreamWriter(file, Encoding);
                 await document.SaveAsync(writer, SaveOptions.None, ct).ConfigureAwait(false);
                 Console.WriteLine($"Created \"{file.Name}\"");
             }
@@ -101,9 +101,7 @@ namespace Dawn.Utils
                     {
                         var argumentType = allParams[0].ParameterType.GetGenericArguments()[0];
 
-                        canBeNull = !argumentType.IsValueType;
-                        if (!canBeNull && argumentType.IsGenericType && argumentType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                            canBeNull = true;
+                        canBeNull = !argumentType.IsValueType || !canBeNull && argumentType.IsGenericType && argumentType.GetGenericTypeDefinition() == typeof(Nullable<>);
                     }
                 }
 
@@ -150,7 +148,6 @@ namespace Dawn.Utils
                         {
                             if (p.ParameterType == typeof(StringComparison))
                                 return $"StringComparison.${p.Name}$";
-
                             else if (p.ParameterType == typeof(StringComparer))
                                 return $"StringComparer.${p.Name}$";
 
