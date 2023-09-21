@@ -1,6 +1,4 @@
-﻿#if !NETSTANDARD1_0
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Mail;
@@ -182,5 +180,3 @@ namespace Dawn
         }
     }
 }
-
-#endif

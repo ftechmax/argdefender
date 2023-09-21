@@ -867,12 +867,7 @@ namespace Dawn
                 const string name = "Contains";
                 var collectionType = typeof(TCollection);
 
-                IEnumerable<MethodInfo> search;
-#if NETSTANDARD1_0
-                search = collectionType.GetTypeInfo().GetDeclaredMethods(name).Where(m => m.IsPublic && !m.IsStatic);
-#else
-                search = collectionType.GetMethods(BindingFlags.Public | BindingFlags.Instance).Where(m => m.Name == name);
-#endif
+                var search = collectionType.GetMethods(BindingFlags.Public | BindingFlags.Instance).Where(m => m.Name == name);
 
                 var methods = search.Where(m => m.ReturnType == typeof(bool)).ToList();
                 if (methods.Count > 0)

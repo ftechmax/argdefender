@@ -89,8 +89,6 @@ namespace Dawn
             }
         }
 
-#if !NETSTANDARD1_0
-
         /// <summary>
         ///     Returns a new argument with the same name and a shallow clone of the original value.
         /// </summary>
@@ -108,7 +106,5 @@ namespace Dawn
             var clone = argument.Value!.Clone() as T;
             return new ArgumentInfo<T>(clone!, argument.Name, argument.Modified, argument.Secure);
         }
-
-#endif
     }
 }

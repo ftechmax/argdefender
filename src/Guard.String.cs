@@ -955,10 +955,8 @@ namespace Dawn
             {
                 StringComparison.CurrentCulture => StringComparer.CurrentCulture,
                 StringComparison.CurrentCultureIgnoreCase => StringComparer.CurrentCultureIgnoreCase,
-#if !NETSTANDARD1_0
                 StringComparison.InvariantCulture => StringComparer.InvariantCulture,
                 StringComparison.InvariantCultureIgnoreCase => StringComparer.InvariantCultureIgnoreCase,
-#endif
                 StringComparison.Ordinal => StringComparer.Ordinal,
                 StringComparison.OrdinalIgnoreCase => StringComparer.OrdinalIgnoreCase,
                 _ => EqualityComparer<string>.Default,

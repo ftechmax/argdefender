@@ -70,7 +70,6 @@ namespace Dawn
         [GuardFunction("Extensibility")]
         public static Exception Fail(Exception exception)
         {
-#if !NETSTANDARD1_0
             StackTrace? stackTrace = null;
             for (var scope = Scope.Current; scope != null; scope = scope.Parent)
             {
@@ -81,7 +80,6 @@ namespace Dawn
                 if (!scope.Propagates)
                     break;
             }
-#endif
 
             return exception;
         }

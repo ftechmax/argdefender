@@ -46,8 +46,6 @@ namespace Dawn
         /// <summary>The priority of a function along its overloads.</summary>
         public int Order { get; }
 
-#if !NETSTANDARD1_0
-
         /// <summary>
         ///     Gets the exposed methods in the specified assembly that are marked with <see cref="GuardFunctionAttribute" />
         /// </summary>
@@ -66,7 +64,5 @@ namespace Dawn
                    orderby a.Group, m.Name, a.Order
                    select new KeyValuePair<MethodInfo, GuardFunctionAttribute>(m, a);
         }
-
-#endif
     }
 }

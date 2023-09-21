@@ -1,7 +1,5 @@
 ﻿#nullable enable
 
-#if !NETSTANDARD1_0
-
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -107,5 +105,3 @@ namespace Dawn
         }
     }
 }
-
-#endif

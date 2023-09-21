@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -19,11 +17,7 @@ namespace Dawn
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsValueType(this Type type)
         {
-#if NETSTANDARD1_0
-            return type.GetTypeInfo().IsValueType;
-#else
             return type.IsValueType;
-#endif
         }
 
         /// <summary>Determines whether the specified type is a generic type.</summary>
@@ -36,12 +30,7 @@ namespace Dawn
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsGenericType(this Type type, Type definition)
         {
-#if NETSTANDARD1_0
-            var info = type.GetTypeInfo();
-            return info.IsGenericType && info.GetGenericTypeDefinition() == definition;
-#else
             return type.IsGenericType && type.GetGenericTypeDefinition() == definition;
-#endif
         }
 
         /// <summary>Returns the type from which the specified type directly inherits.</summary>
@@ -53,11 +42,7 @@ namespace Dawn
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Type? GetBaseType(this Type type)
         {
-#if NETSTANDARD1_0
-            return type.GetTypeInfo().BaseType;
-#else
             return type.BaseType;
-#endif
         }
 
         /// <summary>Returns the getter of the property with the specified name.</summary>
@@ -70,78 +55,21 @@ namespace Dawn
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static MethodInfo? GetPropertyGetter(this Type type, string name)
         {
-#if NETSTANDARD1_0
-            return type.GetTypeInfo().GetDeclaredProperty(name)?.GetMethod;
-#else
             return type.GetProperty(name)?.GetGetMethod();
-#endif
         }
-
-#if NETSTANDARD1_0
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsAssignableFrom(this Type type, Type c)
-            => type.GetTypeInfo().IsAssignableFrom(c.GetTypeInfo());
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsSubclassOf(this Type type, Type baseType)
-            => type.GetTypeInfo().IsSubclassOf(baseType);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Type[] GetGenericArguments(this Type type)
-            => type.GetTypeInfo().GenericTypeArguments;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static IEnumerable<Type> GetInterfaces(this Type type)
-            => type.GetTypeInfo().ImplementedInterfaces;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Type? GetNestedType(this Type type, string name)
-            => type.GetTypeInfo().DeclaredNestedTypes.FirstOrDefault(t => t.Name == name)?.AsType();
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static FieldInfo GetField(this Type type, string name)
-            => type.GetTypeInfo().GetDeclaredField(name);
-
-        private static ConstructorInfo GetConstructor(this Type type, Type[] arguments)
-        {
-            return type.GetTypeInfo().DeclaredConstructors
-                .FirstOrDefault(c => c.IsPublic && c
-                    .GetParameters()
-                    .Select(p => p.ParameterType)
-                    .SequenceEqual(arguments));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static MethodInfo GetMethod(this Type type, string name, Type[] arguments)
-            => type.GetRuntimeMethod(name, arguments);
-#endif
 
         /// <summary>Provides a cached, empty array.</summary>
         /// <typeparam name="T">The type of the array.</typeparam>
         private static class Array<T>
         {
             /// <summary>Gets an empty array.</summary>
-#if NETSTANDARD1_0
-            public static T[] Empty { get; } = new T[0];
-#else
             public static T[] Empty => Array.Empty<T>();
-#endif
         }
     }
 }
 
-#if NETSTANDARD1_0
-namespace System.Runtime.InteropServices
-{
-    /// <summary>Required to use "in" parameters on .NET Standard 1.0.</summary>
-    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
-    internal sealed class InAttribute : Attribute
-    {
-    }
-}
-#endif
+#if NETSTANDARD2_0
 
-#if NETSTANDARD1_0 || NETSTANDARD2_0
 namespace System.Diagnostics.CodeAnalysis
 {
     /// <summary>Required for reference nullability annotations.</summary>
@@ -156,4 +84,5 @@ namespace System.Diagnostics.CodeAnalysis
         public bool ReturnValue { get; }
     }
 }
+
 #endif
