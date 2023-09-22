@@ -36,8 +36,8 @@ jobs:
         with:
           useConfigFile: true
 
-      - name: Run dotnet test
-        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='${{ github.workspace }}/coverage.opencover.xml'
+      - name: Run dotnet tests and coverage
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
       - name: Create package
         run: dotnet pack ./src/Guard.csproj -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} -c Release
@@ -46,8 +46,6 @@ jobs:
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-          files: ${{ github.workspace }}/coverage.opencover.xml
-
 
       # - name: Publish package
       #   run: dotnet nuget push $GITHUB_WORKSPACE/**/*.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
