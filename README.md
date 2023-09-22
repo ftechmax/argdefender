@@ -6,8 +6,15 @@ ArgDefender is a fluent argument validation library that is intuitive, fast and 
 
 [![NuGet](https://img.shields.io/nuget/v/ArgDefender.svg?style=flat)](https://www.nuget.org/packages/ArgDefender/)
 [![Build](https://dev.azure.com/safakgur/Guard/_apis/build/status/Guard-CI?label=builds)](https://dev.azure.com/safakgur/Guard/_build/latest?definitionId=1)
-[![Coverage](https://codecov.io/gh/safakgur/guard/branch/dev/graph/badge.svg)](https://codecov.io/gh/safakgur/guard/branch/dev)  
-`$ dotnet add package ArgDefender` / `PM> Install-Package ArgDefender`
+[![codecov](https://codecov.io/gh/ftechmax/argdefender/graph/badge.svg?token=I4QI609IIQ)](https://codecov.io/gh/ftechmax/argdefender)  
+
+```sh
+dotnet add package ArgDefender
+```
+
+```powershell
+Install-Package ArgDefender
+```
 
 > [!NOTE]  
 > This project is a continuation of the archived Dawn.Guard. The project will go on as ArgDefender. One major upgrade for vNext is the addition of the CallerArgumentExpressionAttribute
