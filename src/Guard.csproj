@@ -37,10 +37,6 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>argument parameter guard validation fluent contract assertion</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-  </PropertyGroup>
-    
-  <PropertyGroup>
-    <GeneratePackageOnBuild Condition="'$(Configuration)'=='CI'">true</GeneratePackageOnBuild>
     <PackageOutputPath>../artifacts/</PackageOutputPath>
   </PropertyGroup>
 
