@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - "main"
+      - "initial"
     paths:
       - 'src/**'
   workflow_dispatch:
-
+    
 jobs:
   release:
     name: Release package
@@ -37,14 +38,14 @@ jobs:
       - name: Create package
         run: dotnet pack ./src/Guard.csproj -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} -c Release
 
-      - name: Publish package
-        run: dotnet nuget push $GITHUB_WORKSPACE/**/*.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+      # - name: Publish package
+      #   run: dotnet nuget push $GITHUB_WORKSPACE/**/*.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
 
-      - name: Create release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.gitversion.outputs.semVer }}
-          commit: "main"
-          name: Release ${{ steps.gitversion.outputs.semVer }}
-          generateReleaseNotes: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Create release
+      #   uses: ncipollo/release-action@v1
+      #   with:
+      #     tag: ${{ steps.gitversion.outputs.semVer }}
+      #     commit: "main"
+      #     name: Release ${{ steps.gitversion.outputs.semVer }}
+      #     generateReleaseNotes: true
+      #     token: ${{ secrets.GITHUB_TOKEN }}
