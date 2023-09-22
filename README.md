@@ -4,8 +4,8 @@
 
 ArgDefender is a fluent argument validation library that is intuitive, fast and extensible.
 
-[![NuGet](https://img.shields.io/nuget/v/ArgDefender.svg?style=flat)](https://www.nuget.org/packages/ArgDefender/)
-[![Build](https://dev.azure.com/safakgur/Guard/_apis/build/status/Guard-CI?label=builds)](https://dev.azure.com/safakgur/Guard/_build/latest?definitionId=1)
+[![NuGet](https://img.shields.io/nuget/v/ArgDefender.svg?style=flat&logo=nuget)](https://www.nuget.org/packages/ArgDefender/)
+[![Release](https://github.com/ftechmax/argdefender/actions/workflows/release.yml/badge.svg)](https://github.com/ftechmax/argdefender/actions/workflows/release.yml)
 [![codecov](https://codecov.io/gh/ftechmax/argdefender/graph/badge.svg?token=I4QI609IIQ)](https://codecov.io/gh/ftechmax/argdefender)  
 
 ```sh
