@@ -1,6 +1,6 @@
-# Guard - Extensibility
+# ArgDefender - Extensibility
 
-This document describes how to add custom validations to Guard by writing simple extension methods.
+This document describes how to add custom validations to ArgDefender by writing simple extension methods.
 
 ## A Basic Validation
 

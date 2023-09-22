@@ -1,6 +1,6 @@
-# Guard - Design Decisions
+# ArgDefender - Design Decisions
 
-This document explains the motives behind the Guard's API design.
+This document explains the motives behind the ArgDefender's API design.
 
 ## To Fluent or Not to Fluent
 
@@ -35,10 +35,10 @@ public static ref readonly ArgumentInfo<T> Test(
 }
 ```
 
-This takes away all the usability of Guard for people using the previous versions of C# but it is
+This takes away all the usability of ArgDefender for people using the previous versions of C# but it is
 somewhat acceptable because a) there is no other way that provides this level of readability with so
 little performance impact and b) as far as the binary compatibility is concerned, people can use
-Guard with C# 7.2 and still be able to target down to .NET Standard 1.0.
+ArgDefender with C# 7.2 and still be able to target down to .NET Standard 1.0.
 
 A compile-time symbol to toggle byref arguments/returns may be added in the future, so a version
 that doesn't take advantage of the new features can be compiled with copy-by-value semantics and
@@ -46,7 +46,7 @@ live as a separate package.
 
 ## Initializing a Guarded Argument
 
-Guard needs to know the argument's value to test it against preconditions and its name to include in
+ArgDefender needs to know the argument's value to test it against preconditions and its name to include in
 a potential exception. There are three ways to initialize a guarded argument:
 
 ```c#
@@ -95,7 +95,7 @@ Guard.Argument(() => arg).NotEmpty());
 
 ## Exception Types
 
-Each validation in Guard has a specific exception type it throws when its precondition is not
+Each validation in ArgDefender has a specific exception type it throws when its precondition is not
 satisfied. `NotNull` throws an `ArgumentNullException`. The validations on `IComparable<T>`
 arguments like `MinValue` and `InRange` throw `ArgumentOutOfRangeException`s. Most others
 throw `ArgumentException`s. (See [Modifying Arguments](#modifying-arguments) for exceptional cases.)
@@ -111,9 +111,9 @@ The above code throws a `KeyNotFoundException` if the `arg` is passed `0`.
 
 ## Exception Messages
 
-Guard creates a meaningful exception message that contains the argument name and a description
+ArgDefender creates a meaningful exception message that contains the argument name and a description
 specific to the validation when a precondition can't be satisfied. Additionaly, every validation in
-Guard accepts an optional parameter letting the user specify a custom error message.
+ArgDefender accepts an optional parameter letting the user specify a custom error message.
 
 ```c#
 // Throws an ArgumentException if the arg is not null.
@@ -136,7 +136,7 @@ Therefore the only possible value that can be passed to a factory would be null.
 
 ## Secure Arguments
 
-Exceptions thrown for failed Guard validations contain very descriptive messages.
+Exceptions thrown for failed ArgDefender validations contain very descriptive messages.
 
 ```c#
 // Throws with message: "token must be a2C-p."
@@ -187,7 +187,7 @@ public class SomeService
 ## Modifying Arguments
 
 A method that validates its arguments can also apply some normalization routines before using them.
-Trimming a string before assigning it to a field/property is a good example for that. Guard provides
+Trimming a string before assigning it to a field/property is a good example for that. ArgDefender provides
 the `Modify` overloads that can be used for normalizing argument values.
 
 ```c#
@@ -266,7 +266,7 @@ particular application.
 ## State Guards
 
 Along with its arguments, a method may also need to validate the state of the instance it belongs
-to. Guard currently provides three validations to handle these cases:
+to. ArgDefender currently provides three validations to handle these cases:
 
 ### Operation
 
@@ -359,11 +359,7 @@ delegate.
   application-wide scope; or in the `BeginRequest` of an ASP.NET application to provide a
   request-wide scope.
 
-This is the first Guard feature that is [requested][4] and implemented by the community, thanks
-[Radek Adamec][5]!
-
 [1]: ../src/Guard.Messages.cs
 [2]: https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.callermembernameattribute "CallerMemberNameAttribute Class | Microsoft Docs"
 [3]: https://docs.microsoft.com/dotnet/api/system.threading.asynclocal-1
-[4]: https://github.com/safakgur/guard/issues/21
-[5]: https://github.com/adamecr
+

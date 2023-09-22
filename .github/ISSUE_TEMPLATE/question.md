@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Get help using Guard
+about: Get help using ArgDefender
 title: ''
 labels: question
 assignees: ''

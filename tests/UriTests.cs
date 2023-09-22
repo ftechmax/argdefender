@@ -9,11 +9,11 @@ namespace Dawn.Tests
 
         private const string HttpsUriScheme = "https"; // Uri.HttpsUriScheme
 
-        private const string HttpsUriString = "https://github.com/safakgur/guard";
+        private const string HttpsUriString = "https://github.com/ftechmax/argdefender";
 
-        private const string HttpUriString = "http://github.com/safakgur/guard";
+        private const string HttpUriString = "http://github.com/ftechmax/argdefender";
 
-        private const string RelativeUriString = "/safakgur/guard";
+        private const string RelativeUriString = "/ftechmax/argdefender";
 
         [Theory(DisplayName = "URI: Absolute/Relative")]
         [InlineData(null, null)]
