@@ -37,7 +37,7 @@ jobs:
           useConfigFile: true
 
       - name: Run dotnet test
-        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='$GITHUB_WORKSPACE/coverage.opencover.xml'
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='${{ github.workspace }}/coverage.opencover.xml'
 
       - name: Create package
         run: dotnet pack ./src/Guard.csproj -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} -c Release
