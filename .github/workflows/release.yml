@@ -1,4 +1,4 @@
-name: Release package
+name: Release
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
     
 jobs:
   release:
-    name: Release package
+    name: Release
     runs-on: [ubuntu-latest]
     container: mcr.microsoft.com/dotnet/sdk:6.0-alpine
     permissions:
