@@ -704,7 +704,9 @@ namespace Dawn.Tests
                     return message;
                 }));
 
+#pragma warning disable xUnit1031 // Do not use blocking task operations in test method
             Task.WaitAll(timeoutTasks);
+#pragma warning restore xUnit1031 // Do not use blocking task operations in test method
         }
     }
 }

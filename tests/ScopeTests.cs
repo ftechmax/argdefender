@@ -21,9 +21,11 @@ namespace Dawn.Tests
                  where p.Length == 2 && p[1].ParameterType == typeof(string)
                  select m).Single();
 
+#pragma warning disable xUnit1031 // Do not use blocking task operations in test method
             Task.WaitAll(
                 Task.Run(Async()),
                 Task.Run(Async()));
+#pragma warning restore xUnit1031 // Do not use blocking task operations in test method
 
             Func<Task> Async() => async () =>
             {
@@ -40,7 +42,6 @@ namespace Dawn.Tests
                 var lastId = id;
                 for (var i = 0; i < 5; i++)
                 {
-
                     Test(ref outerIntercepted);
                     Assert.Equal(lastId + 1, id);
                     id--;
@@ -51,7 +52,7 @@ namespace Dawn.Tests
                     Assert.Equal(lastId + 1, id);
                     id--;
 
-                    await Delay().ConfigureAwait(false);
+                    await Delay();
 
                     Test(ref outerIntercepted);
                     Assert.Equal(lastId + 1, id);
@@ -88,7 +89,7 @@ namespace Dawn.Tests
                         Assert.Equal(lastId + 2, id);
                         id -= 2;
 
-                        await Delay().ConfigureAwait(false);
+                        await Delay();
 
                         Test(ref innerIntercepted);
                         Assert.Equal(lastId + 2, id);
@@ -122,7 +123,7 @@ namespace Dawn.Tests
                         Assert.Equal(lastId + 3, id);
                         id -= 3;
 
-                        await Delay().ConfigureAwait(false);
+                        await Delay();
 
                         Test(ref innerIntercepted);
                         Assert.Equal(lastId + 3, id);
@@ -130,7 +131,7 @@ namespace Dawn.Tests
                     }
                 }
 
-                await Task.WhenAll(disposers).ConfigureAwait(false);
+                await Task.WhenAll(disposers);
             };
 
             static void Test(ref Exception intercepted)
