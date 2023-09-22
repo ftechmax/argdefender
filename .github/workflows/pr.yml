@@ -4,10 +4,13 @@ on:
   merge_group:
   pull_request:
     types: [opened, synchronize]
+  push:
+    branches:
+      - "initial"
 
 jobs:
   build:
-    name: Build merge result
+    name: Tests
     runs-on: [ubuntu-latest]
     container: mcr.microsoft.com/dotnet/sdk:6.0-alpine
     steps:
@@ -16,5 +19,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build
-        run: dotnet build ./Guard.sln
+      - name: run dotnet test
+        run: dotnet test ./Guard.sln /p:CollectCoverage=true
+      
+      - name: Upload test and coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./tests/coverage.json
