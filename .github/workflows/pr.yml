@@ -1,12 +1,9 @@
-name: Pull request build
+name: Pull request
 
 on:
   merge_group:
   pull_request:
     types: [opened, synchronize]
-  push:
-    branches:
-      - "initial"
 
 jobs:
   build:
@@ -19,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: run dotnet test
+      - name: Run dotnet test
         run: dotnet test ./Guard.sln /p:CollectCoverage=true
       
       - name: Upload test and coverage results
