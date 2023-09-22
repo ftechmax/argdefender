@@ -362,4 +362,3 @@ delegate.
 [1]: ../src/Guard.Messages.cs
 [2]: https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.callermembernameattribute "CallerMemberNameAttribute Class | Microsoft Docs"
 [3]: https://docs.microsoft.com/dotnet/api/system.threading.asynclocal-1
-
