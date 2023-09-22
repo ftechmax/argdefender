@@ -3,11 +3,11 @@
   <PropertyGroup>
     <LangVersion>8</LangVersion>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Dawn.Guard</AssemblyName>
-    <Product>Dawn Utils</Product>
+    <AssemblyName>ArgDefender</AssemblyName>
+    <Product>ArgDefender</Product>
     <Version>1.0.0</Version>
     <FileVersion>1.0.0</FileVersion>
-    <RootNamespace>Dawn</RootNamespace>
+    <RootNamespace>ArgDefender</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>$(OutputPath)bin/$(Configuration)/$(TargetFramework)/$(AssemblyName).xml</DocumentationFile>
     <Configurations>Debug;Release;CI</Configurations>
@@ -26,18 +26,28 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PackageId>Dawn.Guard</PackageId>
-    <Authors>Niels Fokkema</Authors>
+    <PackageId>ArgDefender</PackageId>
+    <Authors>ftechmax</Authors>
     <Description>A high-performance, extensible argument validation library.</Description>
-    <PackageIconUrl>https://raw.githubusercontent.com/safakgur/guard/master/media/guard-64.png</PackageIconUrl>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/safakgur/guard</PackageProjectUrl>
-    <Copyright>Copyright © 2023 Niels Fokkema</Copyright>
-    <PackageTags>argument parameter guard validation fluent contract assertion</PackageTags>
-    <RepositoryUrl>https://github.com/safakgur/guard</RepositoryUrl>
+    <Copyright>Copyright © 2023 ftechmax</Copyright>
+    <PackageProjectUrl>https://github.com/ftechmax/argdefender</PackageProjectUrl>
+    <PackageIcon>logo-64.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/ftechmax/argdefender</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageTags>argument parameter guard validation fluent contract assertion</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+    
+  <PropertyGroup>
     <GeneratePackageOnBuild Condition="'$(Configuration)'=='CI'">true</GeneratePackageOnBuild>
     <PackageOutputPath>../artifacts/</PackageOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../logo-64.png" Pack="true" PackagePath="\"/>
+    <None Include="../LICENSE" Pack="true" PackagePath="\"/>
+    <None Include="../README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
 </Project>

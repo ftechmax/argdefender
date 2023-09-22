@@ -1,25 +1,30 @@
-# Guard
+# ArgDefender
 
-![Logo](media/guard-64.png)
+![Logo](logo-64.png)
 
-Guard is a fluent argument validation library that is intuitive, fast and extensible.
+ArgDefender is a fluent argument validation library that is intuitive, fast and extensible.
 
-[![NuGet](https://img.shields.io/nuget/v/Dawn.Guard.svg?style=flat)](https://www.nuget.org/packages/Dawn.Guard/)
+[![NuGet](https://img.shields.io/nuget/v/ArgDefender.svg?style=flat)](https://www.nuget.org/packages/ArgDefender/)
 [![Build](https://dev.azure.com/safakgur/Guard/_apis/build/status/Guard-CI?label=builds)](https://dev.azure.com/safakgur/Guard/_build/latest?definitionId=1)
 [![Coverage](https://codecov.io/gh/safakgur/guard/branch/dev/graph/badge.svg)](https://codecov.io/gh/safakgur/guard/branch/dev)  
-`$ dotnet add package Dawn.Guard` / `PM> Install-Package Dawn.Guard`
+`$ dotnet add package ArgDefender` / `PM> Install-Package ArgDefender`
 
-* [Introduction](#introduction)
-* [What's Wrong with Vanilla?](#whats-wrong-with-vanilla)
-* [Requirements](#requirements)
-* [Standard Validations](#standard-validations)
-* [Design Decisions](#design-decisions)
-* [Extensibility](#extensibility)
-* [Code Snippets](#code-snippets)
+> [!NOTE]  
+> This project is a continuation of the archived Dawn.Guard. The project will go on as ArgDefender. One major upgrade for vNext is the addition of the CallerArgumentExpressionAttribute
+
+- [ArgDefender](#argdefender)
+  - [Introduction](#introduction)
+  - [What's Wrong with Vanilla?](#whats-wrong-with-vanilla)
+  - [Requirements](#requirements)
+  - [More](#more)
+    - [Standard Validations](#standard-validations)
+    - [Design Decisions](#design-decisions)
+    - [Extensibility](#extensibility)
+    - [Code Snippets](#code-snippets)
 
 ## Introduction
 
-Here is a sample constructor that validates its arguments without Guard:
+Here is a sample constructor that validates its arguments without ArgDefender:
 
 ```c#
 public Person(string name, int age)
@@ -38,10 +43,10 @@ public Person(string name, int age)
 }
 ```
 
-And this is how we write the same constructor with Guard:
+And this is how we write the same constructor with ArgDefender:
 
 ```c#
-using Dawn; // Bring Guard into scope.
+using ArgDefender; // Bring ArgDefender into scope.
 
 public Person(string name, int age)
 {
@@ -52,14 +57,14 @@ public Person(string name, int age)
 
 If this looks like too much allocations to you, fear not. The arguments are read-only structs that
 are passed by reference. See the [design decisions](#design-decisions) for details and an
-introduction to Guard's more advanced features.
+introduction to ArgDefender's more advanced features.
 
 ## What's Wrong with Vanilla?
 
 There is nothing wrong with writing your own checks but when you have lots of types you need to
 validate, the task gets very tedious, very quickly.
 
-Let's analyze the string validation in the example without Guard:
+Let's analyze the string validation in the example without ArgDefender:
 
 * We have an argument (name) that we need to be a non-null, non-empty string.
 * We check if it's null and throw an `ArgumentNullException` if it is.
@@ -73,15 +78,15 @@ sometimes find it hard to remember.
 In reality, all we need to express should be the first bullet, that we want our argument non-null
 and non-empty.
 
-With Guard, if you want to guard an argument against null, you just write `NotNull` and that's it.
+With ArgDefender, if you want to guard an argument against null, you just write `NotNull` and that's it.
 If the argument is passed null, you'll get an `ArgumentNullException` thrown with the correct
 parameter name and a clear error message out of the box. The [standard validations](#standard-validations)
 have fully documented, meaningful defaults that get out of your way and let you focus on your project.
 
 ## Requirements
 
-**C# 7.2 or later is required.** Guard takes advantage of almost all the new features introduced in
-C# 7.2. So in order to use Guard, you need to make sure your Visual Studio is up to date and you
+**C# 7.2 or later is required.** ArgDefender takes advantage of almost all the new features introduced in
+C# 7.2. So in order to use ArgDefender, you need to make sure your Visual Studio is up to date and you
 have `<LangVersion>7.2</LangVersion>` or later added in your .csproj file.
 
 **.NET Standard 1.0** and above are supported. [Microsoft Docs][2] lists the following platform
@@ -105,7 +110,7 @@ targeting .NET Core 3.0.
 ## More
 
 The default branch (dev) is the development branch, so it may contain changes/features that are not
-published to NuGet yet. See the [master](https://github.com/safakgur/guard/tree/master) branch for
+published to NuGet yet. See the [main](https://github.com/ftechmax/argdefender/tree/master) branch for
 the latest published version.
 
 ### Standard Validations
@@ -114,12 +119,12 @@ the latest published version.
 
 ### Design Decisions
 
-[Click here][1] for the document that explains the motives behind the Guard's API design and more
+[Click here][1] for the document that explains the motives behind the ArgDefender's API design and more
 advanced features.
 
 ### Extensibility
 
-[Click here][4] to see how to add custom validations to Guard by writing simple extension methods.
+[Click here][4] to see how to add custom validations to ArgDefender by writing simple extension methods.
 
 ### Code Snippets
 
