@@ -7,7 +7,7 @@ ArgDefender is a fluent argument validation library that is intuitive, fast and 
 [![codecov](https://codecov.io/gh/ftechmax/argdefender/graph/badge.svg?token=I4QI609IIQ)](https://codecov.io/gh/ftechmax/argdefender)  
 
 > [!NOTE]  
-> This project is a continuation of the archived [Dawn.Guard](https://github.com/safakgur/guard). The project will go on as ArgDefender
+> This project is a continuation of the archived [Dawn.Guard](https://github.com/safakgur/guard)
 
 - [ArgDefender](#argdefender)
   - [Installation](#installation)
@@ -56,7 +56,7 @@ public Person(string name, int age)
 And this is how we write the same constructor with ArgDefender:
 
 ```c#
-using ArgDefender; // Bring ArgDefender into scope.
+using ArgDefender;
 
 public Person(string name, int age)
 {
