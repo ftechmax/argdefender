@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides preconditions for <see cref="DateTime" /> arguments.</content>
     public static partial class Guard

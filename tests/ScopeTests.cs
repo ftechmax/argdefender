@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Dawn.Tests
+namespace ArgDefender.Tests
 {
     public sealed class ScopeTests : BaseTests
     {

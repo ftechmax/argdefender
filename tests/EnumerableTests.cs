@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Dawn.Tests
+namespace ArgDefender.Tests
 {
     public sealed class EnumerableTests : BaseTests
     {

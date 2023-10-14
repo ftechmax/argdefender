@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <summary>Marks a target as a function of <see cref="Guard" />.</summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]

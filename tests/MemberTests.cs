@@ -2,7 +2,7 @@
 using System.Globalization;
 using Xunit;
 
-namespace Dawn.Tests
+namespace ArgDefender.Tests
 {
     public sealed class MemberTests : BaseTests
     {

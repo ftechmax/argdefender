@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <summary>Marks a method as a non-guarding utility.</summary>
     /// <remarks>Methods with this attribute are ignored by annotation tests.</remarks>

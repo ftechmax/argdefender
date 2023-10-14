@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides preconditions for <see cref="IEnumerable" /> arguments.</content>
     public static partial class Guard

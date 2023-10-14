@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Net.Mail;
 using JetBrains.Annotations;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides preconditions for <see cref="MailAddress" /> arguments.</content>
     public static partial class Guard

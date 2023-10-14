@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides generic preconditions.</content>
     public static partial class Guard

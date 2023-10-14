@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides preconditions for <see cref="System.Enum" /> arguments.</content>
     public static partial class Guard

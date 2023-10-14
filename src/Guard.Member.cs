@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using JetBrains.Annotations;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides routed member preconditions.</content>
     public static partial class Guard

@@ -1,5 +1,4 @@
-﻿using Dawn;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,8 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using ArgDefender;
 
-namespace Dawn.Utils
+namespace ArgDefender.Utils
 {
     internal abstract class Snippet
     {
@@ -101,7 +101,7 @@ namespace Dawn.Utils
                     {
                         var argumentType = allParams[0].ParameterType.GetGenericArguments()[0];
 
-                        canBeNull = !argumentType.IsValueType || !canBeNull && argumentType.IsGenericType && argumentType.GetGenericTypeDefinition() == typeof(Nullable<>);
+                        canBeNull = !argumentType.IsValueType || argumentType.IsGenericType && argumentType.GetGenericTypeDefinition() == typeof(Nullable<>);
                     }
                 }
 
@@ -154,7 +154,7 @@ namespace Dawn.Utils
                             return $"${p.Name}$";
                         })));
 
-                        code.AppendFormat(")$end$;");
+                        code.Append(")$end$;");
                     }
 
                     return new XElement(
@@ -170,7 +170,7 @@ namespace Dawn.Utils
                                 Namespace + "Imports",
                                 new XElement(
                                     Namespace + "Import",
-                                    new XElement(Namespace + "Namespace", nameof(Dawn)))),
+                                    new XElement(Namespace + "Namespace", nameof(ArgDefender)))),
                             new XElement(
                                 Namespace + "Declarations",
                                 isStateGuard ? null : new XElement(

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Dawn.Tests
+namespace ArgDefender.Tests
 {
     public sealed class StringTests : BaseTests
     {

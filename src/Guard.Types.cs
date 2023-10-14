@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using JetBrains.Annotations;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides type preconditions.</content>
     public static partial class Guard

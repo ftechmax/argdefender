@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Xunit;
 
-namespace Dawn.Tests
+namespace ArgDefender.Tests
 {
     public sealed class TypeTests : BaseTests
     {

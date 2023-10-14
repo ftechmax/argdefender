@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <summary>Validates argument preconditions.</summary>
     /// <content>Contains the argument initialization methods.</content>

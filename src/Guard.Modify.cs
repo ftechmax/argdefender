@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides safe modification functions to normalize arguments.</content>
     public static partial class Guard

@@ -4,9 +4,9 @@
     <LangVersion>10</LangVersion>
     <TargetFramework>net6</TargetFramework>
     <OutputType>Exe</OutputType>
-    <StartupObject>Dawn.Utils.Program</StartupObject>
-    <AssemblyName>Dawn.Guard.Utils</AssemblyName>
-    <RootNamespace>Dawn.Utils</RootNamespace>
+    <StartupObject>ArgDefender.Utils.Program</StartupObject>
+    <AssemblyName>ArgDefender.Utils</AssemblyName>
+    <RootNamespace>ArgDefender.Utils</RootNamespace>
     <IsPackable>false</IsPackable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Configurations>Debug;Release;CI</Configurations>

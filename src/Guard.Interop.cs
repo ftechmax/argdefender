@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides utilities to support legacy frameworks.</content>
     public static partial class Guard

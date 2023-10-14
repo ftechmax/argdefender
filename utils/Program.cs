@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dawn.Utils
+namespace ArgDefender.Utils
 {
     public static class Program
     {

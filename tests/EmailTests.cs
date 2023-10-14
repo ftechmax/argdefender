@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Mail;
 using Xunit;
 
-namespace Dawn.Tests
+namespace ArgDefender.Tests
 {
     public sealed class EmailTests : BaseTests
     {

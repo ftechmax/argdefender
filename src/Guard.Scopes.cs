@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace Dawn
+namespace ArgDefender
 {
     /// <content>Provides scoping support.</content>
     public static partial class Guard

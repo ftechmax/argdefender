@@ -3,8 +3,8 @@
   <PropertyGroup>
     <LangVersion>10</LangVersion>
     <TargetFramework>net6</TargetFramework>
-    <AssemblyName>Dawn.Guard.Tests</AssemblyName>
-    <RootNamespace>Dawn.Tests</RootNamespace>
+    <AssemblyName>ArgDefender.Tests</AssemblyName>
+    <RootNamespace>ArgDefender.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Configurations>Debug;Release;CI</Configurations>
