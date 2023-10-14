@@ -9,8 +9,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Configurations>Debug;Release;CI</Configurations>
     <Optimize Condition="'$(Configuration)'=='Release' OR '$(Configuration)'=='CI'">true</Optimize>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>../src/Properties/Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
