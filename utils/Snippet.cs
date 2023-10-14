@@ -53,7 +53,7 @@ namespace ArgDefender.Utils
 
         public sealed class VisualStudioSnippet : Snippet
         {
-            private static readonly XDeclaration Declaration = new XDeclaration("1.0", "utf-8", "no");
+            private static readonly XDeclaration Declaration = new("1.0", "utf-8", "no");
 
             private static readonly XNamespace Namespace = "http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet";
 
@@ -143,7 +143,7 @@ namespace ArgDefender.Utils
                         if (!isExtMethod && typeParams.Length > 0)
                             code.AppendFormat("<{0}>", string.Join(", ", typeParams.Select(t => $"${t.Name}$")));
 
-                        code.Append("(");
+                        code.Append('(');
                         code.Append(string.Join(", ", listParams.Select(p =>
                         {
                             if (p.ParameterType == typeof(StringComparison))
