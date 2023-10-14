@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <LangVersion>10</LangVersion>
+    <TargetFramework>net6</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <StartupObject>ArgDefender.Utils.Program</StartupObject>
+    <AssemblyName>ArgDefender.Utils</AssemblyName>
+    <RootNamespace>ArgDefender.Utils</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Configurations>Debug;Release;CI</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Guard.csproj" />
+  </ItemGroup>
+
+</Project>

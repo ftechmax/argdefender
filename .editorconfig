@@ -1,0 +1,22 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{xml,csproj,proj,stylecop,resx,ruleset,props,targets,config,nuspec,builds}]
+indent_size = 2
+
+[*.json]
+indent_size = 2
+
+[*.cs]
+# `this`
+
+[*.sh]
+end_of_line = lf
+
+[*.{cmd, bat}]
+end_of_line = crlf
