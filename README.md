@@ -1,7 +1,5 @@
 # ArgDefender
 
-![Logo](logo-64.png)
-
 ArgDefender is a fluent argument validation library that is intuitive, fast and extensible.
 
 [![NuGet](https://img.shields.io/nuget/v/ArgDefender.svg?style=flat&logo=nuget)](https://www.nuget.org/packages/ArgDefender/)
@@ -9,24 +7,21 @@ ArgDefender is a fluent argument validation library that is intuitive, fast and 
 [![codecov](https://codecov.io/gh/ftechmax/argdefender/graph/badge.svg?token=I4QI609IIQ)](https://codecov.io/gh/ftechmax/argdefender)  
 
 > [!NOTE]  
-> This project is a continuation of the archived Dawn.Guard. The project will go on as ArgDefender
-
-
-
+> This project is a continuation of the archived [Dawn.Guard](https://github.com/safakgur/guard). The project will go on as ArgDefender
 
 - [ArgDefender](#argdefender)
   - [Installation](#installation)
   - [Introduction](#introduction)
   - [What's Wrong with Vanilla?](#whats-wrong-with-vanilla)
-  - [Requirements](#requirements)
-  - [More](#more)
     - [Standard Validations](#standard-validations)
     - [Design Decisions](#design-decisions)
     - [Extensibility](#extensibility)
     - [Code Snippets](#code-snippets)
 
 ## Installation
+
 Using `dotnet`
+
 ```sh
 dotnet add package ArgDefender
 ```
@@ -98,6 +93,8 @@ If the argument is passed null, you'll get an `ArgumentNullException` thrown wit
 parameter name and a clear error message out of the box. The [standard validations](#standard-validations)
 have fully documented, meaningful defaults that get out of your way and let you focus on your project.
 
+<!--
+TODO: ftechmax: Rewrite for .net6 and onward
 ## Requirements
 
 **C# 8 or later is required.** ArgDefender takes advantage of almost all the new features introduced in
@@ -115,13 +112,15 @@ versions as .NET Standard 2.0 compliant. The unit tests are targeting .NET 6.0.
 | Xamarin.iOS                | 10.14, 12.16                                  |
 | Xamarin.Mac                | 3.8, 5.16                                     |
 | Xamarin.Android            | 8.0, 10.0                                     |
-| Universal Windows Platform | 10.0.16299                                    |
+| Universal Windows Platform | 10.0.16299                                    | -->
 
+<!--
+TODO: ftechmax: Might not introduce a develop branch for this project
 ## More
 
-The default branch (dev) is the development branch, so it may contain changes/features that are not
+The default branch (develop) is the development branch, so it may contain changes/features that are not
 published to NuGet yet. See the [main](https://github.com/ftechmax/argdefender/tree/main) branch for
-the latest published version.
+the latest published version. -->
 
 ### Standard Validations
 
