@@ -24,7 +24,7 @@ namespace ArgDefender
         [DebuggerStepThrough]
         [GuardFunction("String", "gem")]
         public static ref readonly ArgumentInfo<string> Empty(
-            in this ArgumentInfo<string> argument, Func<string, string> message = null)
+            in this ArgumentInfo<string> argument, Func<string, string>? message = null)
         {
             if (argument.Value?.Length > 0)
             {
@@ -48,7 +48,7 @@ namespace ArgDefender
         [DebuggerStepThrough]
         [GuardFunction("String", "gnem")]
         public static ref readonly ArgumentInfo<string> NotEmpty(
-            in this ArgumentInfo<string> argument, string message = null)
+            in this ArgumentInfo<string> argument, string? message = null)
         {
             if (argument.Value?.Length == 0)
             {
@@ -76,7 +76,7 @@ namespace ArgDefender
         [DebuggerStepThrough]
         [GuardFunction("String", "gw")]
         public static ref readonly ArgumentInfo<string> WhiteSpace(
-            in this ArgumentInfo<string> argument, Func<string, string> message = null)
+            in this ArgumentInfo<string> argument, Func<string, string>? message = null)
         {
             if (argument.Value != null && !string.IsNullOrWhiteSpace(argument.Value))
             {
@@ -105,7 +105,7 @@ namespace ArgDefender
         [DebuggerStepThrough]
         [GuardFunction("String", "gnw")]
         public static ref readonly ArgumentInfo<string> NotWhiteSpace(
-            in this ArgumentInfo<string> argument, Func<string, string> message = null)
+            in this ArgumentInfo<string> argument, Func<string, string>? message = null)
         {
             if (argument.Value != null && string.IsNullOrWhiteSpace(argument.Value))
             {
@@ -164,7 +164,7 @@ namespace ArgDefender
         [DebuggerStepThrough]
         [GuardFunction("String", "gl")]
         public static ref readonly ArgumentInfo<string> Length(
-            in this ArgumentInfo<string> argument, int length, Func<string, int, string> message = null)
+            in this ArgumentInfo<string> argument, int length, Func<string, int, string>? message = null)
         {
             if (argument.HasValue && argument.Value.Length != length)
             {
@@ -196,7 +196,7 @@ namespace ArgDefender
         [DebuggerStepThrough]
         [GuardFunction("String", "gnl")]
         public static ref readonly ArgumentInfo<string> NotLength(
-            in this ArgumentInfo<string> argument, int length, Func<string, int, string> message = null)
+            in this ArgumentInfo<string> argument, int length, Func<string, int, string>? message = null)
         {
             if (argument.HasValue && argument.Value.Length == length)
             {
@@ -230,8 +230,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> MinLength(
             in this ArgumentInfo<string> argument,
             int minLength,
-            Func<string, int, string>
-            message = null)
+            Func<string, int, string>? message = null)
         {
             if (argument.Value?.Length < minLength)
             {
@@ -265,7 +264,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> MaxLength(
             in this ArgumentInfo<string> argument,
             int maxLength,
-            Func<string, int, string> message = null)
+            Func<string, int, string>? message = null)
         {
             if (argument.Value?.Length > maxLength)
             {
@@ -303,7 +302,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             int minLength,
             int maxLength,
-            Func<string, int, int, string> message = null)
+            Func<string, int, int, string>? message = null)
         {
             if (argument.HasValue)
                 if (argument.Value.Length < minLength || argument.Value.Length > maxLength)
@@ -340,7 +339,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             string other,
             StringComparison comparison,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
         {
             if (argument.HasValue && !StringEqualityComparer(comparison).Equals(argument.Value, other))
             {
@@ -374,7 +373,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             string other,
             StringComparison comparison,
-            Func<string, string> message = null)
+            Func<string, string>? message = null)
         {
             if (argument.HasValue && StringEqualityComparer(comparison).Equals(argument.Value, other))
             {
@@ -406,7 +405,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> StartsWith(
             in this ArgumentInfo<string> argument,
             string value,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
             => ref argument.StartsWith(value, StringComparison.CurrentCulture, message);
 
         /// <summary>
@@ -432,7 +431,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             string value,
             StringComparison comparison,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
         {
             if (argument.HasValue && value != null && !argument.Value.StartsWith(value, comparison))
             {
@@ -464,7 +463,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> DoesNotStartWith(
             in this ArgumentInfo<string> argument,
             string value,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
             => ref argument.DoesNotStartWith(value, StringComparison.CurrentCulture, message);
 
         /// <summary>
@@ -490,7 +489,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             string value,
             StringComparison comparison,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
         {
             if (argument.HasValue && value != null && argument.Value.StartsWith(value, comparison))
             {
@@ -522,7 +521,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> EndsWith(
             in this ArgumentInfo<string> argument,
             string value,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
             => ref argument.EndsWith(value, StringComparison.CurrentCulture, message);
 
         /// <summary>
@@ -548,7 +547,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             string value,
             StringComparison comparison,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
         {
             if (argument.HasValue && value != null && !argument.Value.EndsWith(value, comparison))
             {
@@ -580,7 +579,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> DoesNotEndWith(
             in this ArgumentInfo<string> argument,
             string value,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
             => ref argument.DoesNotEndWith(value, StringComparison.CurrentCulture, message);
 
         /// <summary>
@@ -606,7 +605,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             string value,
             StringComparison comparison,
-            Func<string, string, string> message = null)
+            Func<string, string, string>? message = null)
         {
             if (argument.HasValue && value != null && argument.Value.EndsWith(value, comparison))
             {
@@ -638,7 +637,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> Matches(
             in this ArgumentInfo<string> argument,
             [RegexPattern] string pattern,
-            Func<string, bool, string> message = null)
+            Func<string, bool, string>? message = null)
         {
             if (argument.HasValue && pattern != null)
             {
@@ -694,7 +693,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             [RegexPattern] string pattern,
             TimeSpan matchTimeout,
-            Func<string, bool, string> message = null)
+            Func<string, bool, string>? message = null)
         {
             if (argument.HasValue && pattern != null)
             {
@@ -749,7 +748,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> Matches(
             in this ArgumentInfo<string> argument,
             Regex regex,
-            Func<string, bool, string> message = null)
+            Func<string, bool, string>? message = null)
         {
             if (argument.HasValue && regex != null)
             {
@@ -800,7 +799,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> DoesNotMatch(
             in this ArgumentInfo<string> argument,
             [RegexPattern] string pattern,
-            Func<string, bool, string> message = null)
+            Func<string, bool, string>? message = null)
         {
             if (argument.HasValue && pattern != null)
             {
@@ -857,7 +856,7 @@ namespace ArgDefender
             in this ArgumentInfo<string> argument,
             [RegexPattern] string pattern,
             TimeSpan matchTimeout,
-            Func<string, bool, string> message = null)
+            Func<string, bool, string>? message = null)
         {
             if (argument.HasValue && pattern != null)
             {
@@ -913,7 +912,7 @@ namespace ArgDefender
         public static ref readonly ArgumentInfo<string> DoesNotMatch(
             in this ArgumentInfo<string> argument,
             Regex regex,
-            Func<string, bool, string> message = null)
+            Func<string, bool, string>? message = null)
         {
             if (argument.HasValue && regex != null)
             {

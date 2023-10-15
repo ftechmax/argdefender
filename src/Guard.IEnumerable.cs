@@ -1,7 +1,4 @@
-﻿#nullable enable
-
-using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using JetBrains.Annotations;
 
 namespace ArgDefender
 {
@@ -793,9 +791,11 @@ namespace ArgDefender
                     {
                         if (!Collection.CachedCountFunctions.TryGetValue(collection!.GetType(), out func))
                         {
+#pragma warning disable CS8604 // Possible null reference argument.
                             var f = Expression.Field(null, typeof(Collection<>)
                                 .MakeGenericType(collection.GetType())
                                 .GetField(nameof(Count)));
+#pragma warning restore CS8604 // Possible null reference argument.
 
                             var o = Expression.Parameter(typeof(object), nameof(collection));
                             var m = Expression.Parameter(typeof(int), nameof(max));
@@ -930,9 +930,11 @@ namespace ArgDefender
                     {
                         if (!Collection.CachedContainsNullFunctions.TryGetValue(collection!.GetType(), out var del))
                         {
+#pragma warning disable CS8604 // Possible null reference argument.
                             var f = Expression.Field(null, typeof(Collection<>)
                                 .MakeGenericType(collection.GetType())
                                 .GetField(nameof(ContainsNull)));
+#pragma warning restore CS8604 // Possible null reference argument.
 
                             var o = Expression.Parameter(typeof(object), nameof(collection));
                             var i = Expression.Invoke(f, Expression.Convert(o, collection.GetType()));
@@ -993,6 +995,7 @@ namespace ArgDefender
                 var enumeratorType = typeof(IEnumerator<>).MakeGenericType(itemType);
                 var enumeratorVar = Expression.Variable(enumeratorType, "enumerator");
                 var getEnumeratorMethod = enumerableType.GetMethod("GetEnumerator", Array<Type>.Empty);
+#pragma warning disable CS8604 // Possible null reference argument.
                 var getEnumeratorCall = Expression.Call(collectionParam, getEnumeratorMethod);
                 var moveNextMethod = typeof(IEnumerator).GetMethod("MoveNext", Array<Type>.Empty);
                 var moveNextCall = Expression.Call(enumeratorVar, moveNextMethod);
@@ -1002,6 +1005,7 @@ namespace ArgDefender
                 var returnDefault = Expression.Default(returnType);
                 var returnLabelTarget = Expression.Label(returnType, "ReturnResult");
                 var returnLabel = Expression.Label(returnLabelTarget, returnDefault);
+
                 var block = Expression.Block(
                     new[] { comparerParam, setVar, enumeratorVar, itemVar },
                     Expression.IfThenElse(
@@ -1025,6 +1029,7 @@ namespace ArgDefender
                         )),
                     returnLabel
                 );
+#pragma warning restore CS8604 // Possible null reference argument.
 
                 return Expression.Lambda<Func<TCollection, object?, (bool, object)>>(
                     block, collectionParam, comparerParam).Compile();
@@ -1034,7 +1039,9 @@ namespace ArgDefender
                     if (comparerParam != null)
                     {
                         var setCtor = setType.GetConstructor(new[] { comparerType });
+#pragma warning disable CS8604 // Possible null reference argument.
                         return Expression.New(setCtor, Expression.Convert(comparerParam, comparerType));
+#pragma warning restore CS8604 // Possible null reference argument.
                     }
 
                     var countGetter = GetCountGetter();
@@ -1043,7 +1050,9 @@ namespace ArgDefender
                         {
                             var setCtor = setType.GetConstructor(new[] { typeof(int) });
                             var countCall = Expression.Call(collectionParam, countGetter);
+#pragma warning disable CS8604 // Possible null reference argument.
                             return Expression.New(setCtor, countCall);
+#pragma warning restore CS8604 // Possible null reference argument.
                         }
                         catch (Exception)
                         {
@@ -1178,10 +1187,12 @@ namespace ArgDefender
                             var key = (collection.GetType(), typeof(TItem));
                             if (!Collection.CachedContainsFunctions.TryGetValue(key, out var del))
                             {
+#pragma warning disable CS8604 // Possible null reference argument.
                                 var f = Expression.Field(null, typeof(Collection<>)
                                     .GetNestedType("Typed`1")!
                                     .MakeGenericType(collection.GetType(), typeof(TItem))
                                     .GetField(nameof(Contains)));
+#pragma warning restore CS8604 // Possible null reference argument.
 
                                 var o = Expression.Parameter(typeof(object), nameof(collection));
                                 var i = Expression.Parameter(typeof(TItem), nameof(item));

@@ -23,10 +23,10 @@ namespace ArgDefender
         [AssertionMethod]
         [DebuggerStepThrough]
         [GuardFunction("Email")]
-        public static ref readonly ArgumentInfo<MailAddress> HasHost(
-            in this ArgumentInfo<MailAddress> argument,
+        public static ref readonly ArgumentInfo<MailAddress?> HasHost(
+            in this ArgumentInfo<MailAddress?> argument,
             string host,
-            Func<MailAddress, string, string> message = null)
+            Func<MailAddress, string, string>? message = null)
         {
             if (argument.TryGetValue(out var value) &&
                 !value.Host.Equals(host, StringComparison.OrdinalIgnoreCase))
@@ -52,10 +52,10 @@ namespace ArgDefender
         [AssertionMethod]
         [DebuggerStepThrough]
         [GuardFunction("Email")]
-        public static ref readonly ArgumentInfo<MailAddress> DoesNotHaveHost(
-            in this ArgumentInfo<MailAddress> argument,
+        public static ref readonly ArgumentInfo<MailAddress?> DoesNotHaveHost(
+            in this ArgumentInfo<MailAddress?> argument,
             string host,
-            Func<MailAddress, string, string> message = null)
+            Func<MailAddress, string, string>? message = null)
         {
             if (argument.TryGetValue(out var value) &&
                 value.Host.Equals(host, StringComparison.OrdinalIgnoreCase))
@@ -82,14 +82,14 @@ namespace ArgDefender
         [AssertionMethod]
         [DebuggerStepThrough]
         [GuardFunction("Email")]
-        public static ref readonly ArgumentInfo<MailAddress> HostIn<TCollection>(
-            in this ArgumentInfo<MailAddress> argument,
+        public static ref readonly ArgumentInfo<MailAddress?> HostIn<TCollection>(
+            in this ArgumentInfo<MailAddress?> argument,
             TCollection hosts,
-            Func<MailAddress, IEnumerable<string>, string> message = null)
+            Func<MailAddress, IEnumerable<string>, string>? message = null)
             where TCollection : IEnumerable<string>
         {
             if (argument.TryGetValue(out var value) &&
-                !Collection<TCollection>.Typed<string>.Contains(hosts, value.Host, null))
+                !Collection<TCollection>.Typed<string>.Contains(hosts, value.Host, null!))
             {
                 var m = message?.Invoke(value, hosts) ?? Messages.EmailHostIn(argument, hosts);
                 throw Fail(new ArgumentException(m, argument.Name));
@@ -113,14 +113,14 @@ namespace ArgDefender
         [AssertionMethod]
         [DebuggerStepThrough]
         [GuardFunction("Email")]
-        public static ref readonly ArgumentInfo<MailAddress> HostNotIn<TCollection>(
-            in this ArgumentInfo<MailAddress> argument,
+        public static ref readonly ArgumentInfo<MailAddress?> HostNotIn<TCollection>(
+            in this ArgumentInfo<MailAddress?> argument,
             TCollection hosts,
-            Func<MailAddress, IEnumerable<string>, string> message = null)
+            Func<MailAddress, IEnumerable<string>, string>? message = null)
             where TCollection : IEnumerable<string>
         {
             if (argument.TryGetValue(out var value) &&
-                Collection<TCollection>.Typed<string>.Contains(hosts, value.Host, null))
+                Collection<TCollection>.Typed<string>.Contains(hosts, value.Host, null!))
             {
                 var m = message?.Invoke(value, hosts) ?? Messages.EmailHostNotIn(argument, hosts);
                 throw Fail(new ArgumentException(m, argument.Name));
@@ -142,8 +142,8 @@ namespace ArgDefender
         [AssertionMethod]
         [DebuggerStepThrough]
         [GuardFunction("Email")]
-        public static ref readonly ArgumentInfo<MailAddress> HasDisplayName(
-            in this ArgumentInfo<MailAddress> argument, Func<MailAddress, string> message = null)
+        public static ref readonly ArgumentInfo<MailAddress?> HasDisplayName(
+            in this ArgumentInfo<MailAddress?> argument, Func<MailAddress, string>? message = null)
         {
             if (argument.TryGetValue(out var value) && value.DisplayName.Length == 0)
             {
@@ -167,8 +167,8 @@ namespace ArgDefender
         [AssertionMethod]
         [DebuggerStepThrough]
         [GuardFunction("Email")]
-        public static ref readonly ArgumentInfo<MailAddress> DoesNotHaveDisplayName(
-            in this ArgumentInfo<MailAddress> argument, Func<MailAddress, string> message = null)
+        public static ref readonly ArgumentInfo<MailAddress?> DoesNotHaveDisplayName(
+            in this ArgumentInfo<MailAddress?> argument, Func<MailAddress, string>? message = null)
         {
             if (argument.TryGetValue(out var value) && value.DisplayName.Length > 0)
             {

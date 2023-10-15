@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
@@ -36,7 +37,10 @@ namespace ArgDefender
         [DebuggerStepThrough]
         [GuardFunction("Initialization", "ga", order: 1)]
         public static ArgumentInfo<T> Argument<T>(
-            T value, [InvokerParameterName] string? name = null, bool secure = false)
+            T value,
+            ////[InvokerParameterName] string? name = null,
+            [CallerArgumentExpression("value")] string? name = null,
+            bool secure = false)
             => new ArgumentInfo<T>(value, name, secure: secure);
 
         /// <summary>
@@ -112,7 +116,8 @@ namespace ArgDefender
             [DebuggerStepThrough]
             public ArgumentInfo(
                 T value,
-                [InvokerParameterName] string? name,
+                ////[InvokerParameterName] string? name,
+                [CallerArgumentExpression("value")] string? name = null,
                 bool modified = false,
                 bool secure = false)
             {

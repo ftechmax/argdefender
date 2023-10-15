@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -290,7 +288,9 @@ namespace ArgDefender
                     if (!CanBeConvertedToDict.TryGetValue(targetType, out func))
                     {
                         var t = typeof(TypeInfo<>).MakeGenericType(targetType);
+#pragma warning disable CS8604 // Possible null reference argument.
                         var f = Expression.Field(null, t.GetField(nameof(TypeInfo<object>.CanBeInitializedFrom)));
+#pragma warning restore CS8604 // Possible null reference argument.
                         var o = Expression.Parameter(typeof(object), "obj");
                         var c = Expression.Invoke(f, o);
                         var l = Expression.Lambda<Func<object, bool>>(c, o);

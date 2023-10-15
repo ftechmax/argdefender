@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -231,40 +229,40 @@ namespace ArgDefender
             public static string NotInCollection<T>(ArgumentInfo<T> argument, IEnumerable collection)
                 => argument.Secure ? Require(argument) : $"{argument.Name} cannot be one of the following: {Join(collection)}";
 
-            public static string UriAbsolute(in ArgumentInfo<Uri> argument)
+            public static string UriAbsolute(in ArgumentInfo<Uri?> argument)
                 => $"{argument.Name} must be an absolute URI.";
 
-            public static string UriRelative(in ArgumentInfo<Uri> argument)
+            public static string UriRelative(in ArgumentInfo<Uri?> argument)
                 => $"{argument.Name} must be a relative URI.";
 
-            public static string UriScheme(in ArgumentInfo<Uri> argument, string scheme)
+            public static string UriScheme(in ArgumentInfo<Uri?> argument, string scheme)
                 => $"{argument.Name} must be an absolute URI with the {scheme} scheme.";
 
-            public static string UriNotScheme(in ArgumentInfo<Uri> argument, string scheme)
+            public static string UriNotScheme(in ArgumentInfo<Uri?> argument, string scheme)
                 => $"{argument.Name} cannot have the {scheme} scheme.";
 
-            public static string UriHttp(in ArgumentInfo<Uri> argument)
+            public static string UriHttp(in ArgumentInfo<Uri?> argument)
                 => $"{argument.Name} must be an absolute URI with the HTTP scheme.";
 
-            public static string UriHttps(in ArgumentInfo<Uri> argument)
+            public static string UriHttps(in ArgumentInfo<Uri?> argument)
                 => $"{argument.Name} must be an absolute URI with the HTTPS scheme.";
 
-            public static string EmailHasHost(in ArgumentInfo<MailAddress> argument, string host)
+            public static string EmailHasHost(in ArgumentInfo<MailAddress?> argument, string host)
                 => argument.Secure ? Require(argument) : $"{argument.Name} must have the host '{host}'.";
 
-            public static string EmailDoesNotHaveHost(in ArgumentInfo<MailAddress> argument, string host)
+            public static string EmailDoesNotHaveHost(in ArgumentInfo<MailAddress?> argument, string host)
                 => argument.Secure ? Require(argument) : $"{argument.Name} cannot have the host '{host}'.";
 
-            public static string EmailHostIn(in ArgumentInfo<MailAddress> argument, IEnumerable<string> hosts)
+            public static string EmailHostIn(in ArgumentInfo<MailAddress?> argument, IEnumerable<string> hosts)
                 => argument.Secure ? Require(argument) : $"{argument.Name} must have one of the following hosts: {Join(hosts)}.";
 
-            public static string EmailHostNotIn(in ArgumentInfo<MailAddress> argument, IEnumerable<string> hosts)
+            public static string EmailHostNotIn(in ArgumentInfo<MailAddress?> argument, IEnumerable<string> hosts)
                 => argument.Secure ? Require(argument) : $"{argument.Name} cannot have one of the following hosts: {Join(hosts)}.";
 
-            public static string EmailHasDisplayName(in ArgumentInfo<MailAddress> argument)
+            public static string EmailHasDisplayName(in ArgumentInfo<MailAddress?> argument)
                 => $"{argument.Name} must have a display name specified.";
 
-            public static string EmailDoesNotHaveDisplayName(in ArgumentInfo<MailAddress> argument)
+            public static string EmailDoesNotHaveDisplayName(in ArgumentInfo<MailAddress?> argument)
                 => $"{argument.Name} cannot have a display name specified.";
 
             public static string KindSpecified<T>(in ArgumentInfo<T> argument)

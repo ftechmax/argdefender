@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -29,7 +27,7 @@ namespace ArgDefender
                 .NotNull()
                 .NotWhiteSpace();
 
-            Shortcut = Guard.Argument(shortcut, nameof(shortcut))
+            Shortcut = Guard.Argument(shortcut, nameof(shortcut))!
                 .StartsWith("g", StringComparison.Ordinal)
                 .DoesNotStartWith("gx", StringComparison.Ordinal)
                 .MinLength(2);

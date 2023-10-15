@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -292,11 +290,13 @@ namespace ArgDefender
                     exp = e.Expression;
                 }
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (node is null || exp.NodeType != ExpressionType.Parameter)
                 {
                     var m = "The selector must be composed of member accesses.";
                     throw new ArgumentException(m, nameof(lexp));
                 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 node.Lock.EnterUpgradeableReadLock();
                 try
