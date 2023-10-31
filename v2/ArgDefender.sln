@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33712.159
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArgDefender", "src\ArgDefender\ArgDefender.csproj", "{B1555477-4E81-4FCE-AA57-F09A2E48C4D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArgDefender.Tests", "tests\ArgDefender.Tests\ArgDefender.Tests.csproj", "{E658CD99-356F-4350-85FD-DE397CD6D529}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B1555477-4E81-4FCE-AA57-F09A2E48C4D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1555477-4E81-4FCE-AA57-F09A2E48C4D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1555477-4E81-4FCE-AA57-F09A2E48C4D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1555477-4E81-4FCE-AA57-F09A2E48C4D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E658CD99-356F-4350-85FD-DE397CD6D529}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E658CD99-356F-4350-85FD-DE397CD6D529}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E658CD99-356F-4350-85FD-DE397CD6D529}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E658CD99-356F-4350-85FD-DE397CD6D529}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A96886C-FF85-4966-B61F-EA2013A46C1E}
+	EndGlobalSection
+EndGlobal
