@@ -1,188 +1,227 @@
-﻿using System;
-using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class EqualityTests
 {
-    public sealed class EqualityTests : BaseTests
+    private sealed class RefHolder
     {
-        [Theory(DisplayName = "Equality: Default/NotDefault")]
-        [InlineData(null, null)]
-        [InlineData(0, 1)]
-        public void Default(int? @default, int? nonDefault)
-        {
-            var nullableDefaultArg = Guard.Argument(() => @default).Default();
-            var nullableNonDefaultArg = Guard.Argument(() => nonDefault).NotDefault();
-            if (!@default.HasValue)
-            {
-                nullableDefaultArg.NotDefault();
-                nullableNonDefaultArg.Default();
-                return;
-            }
+        public int Value { get; }
+        public RefHolder(int value) => Value = value;
+    }
 
-            ThrowsArgumentException(
-                nullableNonDefaultArg,
-                arg => arg.Default(),
-                (arg, message) => arg.Default(i =>
-                {
-                    Assert.Equal(nonDefault, i);
-                    return message;
-                }));
+    [Test]
+    public void Default_Pass()
+    {
+        var arg = 0;
 
-            ThrowsArgumentException(
-                nullableDefaultArg,
-                arg => arg.NotDefault(),
-                (arg, message) => arg.NotDefault(message));
+        var act = () => Guard.Argument(arg).Default();
 
-            var defaultArg = Guard.Argument(@default.Value, nameof(@default)).Default();
-            var nonDefaultArg = Guard.Argument(nonDefault.Value, nameof(nonDefault)).NotDefault();
-            ThrowsArgumentException(
-                nonDefaultArg,
-                arg => arg.Default(),
-                (arg, message) => arg.Default(i =>
-                {
-                    Assert.Equal(nonDefault, i);
-                    return message;
-                }));
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentException(
-                defaultArg,
-                arg => arg.NotDefault(),
-                (arg, message) => arg.NotDefault(message));
-        }
+    [Test]
+    public void Default_Fail()
+    {
+        var arg = 5;
 
-        [Theory(DisplayName = "Equality: Equal/NotEqual w/o comparer")]
-        [InlineData(null, null, null, false)]
-        [InlineData("AB", "AB", "BC", false)]
-        [InlineData("AB", "AB", "BC", true)]
-        public void EqualWithoutComparer(string value, string equal, string unequal, bool secure)
-        {
-            var valueArg = Guard.Argument(() => value, secure).Equal(equal).NotEqual(unequal);
-            if (value == null)
-            {
-                valueArg.Equal(unequal);
-                return;
-            }
+        Action act = () => Guard.Argument(arg).Default();
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.Equal(unequal),
-                m => secure != m.Contains(unequal),
-                (arg, message) => arg.Equal(unequal, (v, other) =>
-                {
-                    Assert.Same(value, v);
-                    Assert.Same(unequal, other);
-                    return message;
-                }));
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.NotEqual(equal),
-                m => secure != m.Contains(equal),
-                (arg, message) => arg.NotEqual(equal, v =>
-                {
-                    Assert.Same(value, v);
-                    return message;
-                }));
-        }
+    [Test]
+    public void Default_Nullable_Pass_Null()
+    {
+        int? arg = null;
 
-        [Theory(DisplayName = "Equality: Equal/NotEqual w/ comparer")]
-        [InlineData(null, null, null, StringComparison.Ordinal, false)]
-        [InlineData("AB", "AB", "ab", StringComparison.Ordinal, false)]
-        [InlineData("AB", "AB", "ab", StringComparison.Ordinal, true)]
-        [InlineData("AB", "ab", "BC", StringComparison.OrdinalIgnoreCase, false)]
-        [InlineData("AB", "ab", "BC", StringComparison.OrdinalIgnoreCase, true)]
-        public void EqualWithComparer(
-            string value, string equal, string unequal, StringComparison comparison, bool secure)
-        {
-            var valueArg = Guard.Argument(() => value, secure);
-            var comparer = comparison == StringComparison.Ordinal
-                ? StringComparer.Ordinal
-                : StringComparer.OrdinalIgnoreCase;
+        var act = () => Guard.Argument(arg).Default();
 
-            valueArg.Equal(equal, comparer).NotEqual(unequal, comparer);
+        act.ShouldNotThrow();
+    }
 
-            if (value == null)
-            {
-                valueArg.Equal(unequal, comparer);
-                valueArg.NotEqual(equal, comparer);
-                return;
-            }
+    [Test]
+    public void NotDefault_Pass()
+    {
+        var arg = 2;
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.Equal(unequal, comparer),
-                m => secure != m.Contains(unequal),
-                (arg, message) => arg.Equal(unequal, comparer, (v, other) =>
-                {
-                    Assert.Same(value, v);
-                    Assert.Same(unequal, other);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).NotDefault();
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.NotEqual(equal, comparer),
-                m => secure != m.Contains(equal),
-                (arg, message) => arg.NotEqual(equal, comparer, v =>
-                {
-                    Assert.Same(value, v);
-                    return message;
-                }));
-        }
+        act.ShouldNotThrow();
+    }
 
-        [Fact(DisplayName = "Equality: Same/NotSame")]
-        public void Same()
-        {
-            var one1 = "1";
-            var one2 = ((char)('0' + 1)).ToString();
+    [Test]
+    public void NotDefault_Fail()
+    {
+        var arg = 0;
 
-            Test(null, null, null, false);
-            Test(one1, one1, one2, false);
-            Test(one1, one1, one2, true);
+        Action act = () => Guard.Argument(arg).NotDefault();
 
-            void Test(string value, string same, string nonSame, bool secure)
-            {
-                same = same?.ToString();
-                nonSame = nonSame?.ToString();
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-                var valueArg = Guard.Argument(() => value, secure);
-                valueArg
-                    .Equal(same)
-                    .Equal(nonSame)
-                    .Same(same)
-                    .NotSame(nonSame);
+    [Test]
+    public void NotDefault_Nullable_Pass_Null()
+    {
+        int? arg = null;
 
-                if (value is null)
-                {
-                    valueArg
-                        .Same(nonSame)
-                        .NotSame(same);
+        var act = () => Guard.Argument(arg).NotDefault();
 
-                    return;
-                }
+        act.ShouldNotThrow();
+    }
 
-                ThrowsArgumentException(
-                    valueArg,
-                    arg => arg.Same(nonSame),
-                    m => secure != m.Contains(nonSame),
-                    (arg, message) => arg.Same(nonSame, (v, other) =>
-                    {
-                        Assert.Same(value, v);
-                        Assert.Same(nonSame, other);
-                        return message;
-                    }));
+    [Test]
+    public void Equal_Pass()
+    {
+        var arg = "hello";
 
-                ThrowsArgumentException(
-                    valueArg,
-                    arg => arg.NotSame(same),
-                    m => secure != m.Contains(same),
-                    (arg, message) => arg.NotSame(same, (v, other) =>
-                    {
-                        Assert.Same(value, v);
-                        Assert.Same(same, other);
-                        return message;
-                    }));
-            }
-        }
+        var act = () => Guard.Argument(arg).Equal("hello");
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Equal_Fail()
+    {
+        var arg = "hello";
+
+        Action act = () => Guard.Argument(arg).Equal("world");
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void Equal_Nullable_Pass_Null()
+    {
+        int? arg = null;
+
+        var act = () => Guard.Argument(arg).Equal(5);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Equal_Delta_Double_Pass()
+    {
+        var arg = 1.0d;
+
+        var act = () => Guard.Argument(arg).Equal(1.05d, 0.1d);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Equal_Delta_Double_Fail()
+    {
+        var arg = 1.0d;
+
+        Action act = () => Guard.Argument(arg).Equal(1.2d, 0.1d);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotEqual_Pass()
+    {
+        var arg = 10;
+
+        var act = () => Guard.Argument(arg).NotEqual(20);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotEqual_Fail()
+    {
+        var arg = 10;
+
+        Action act = () => Guard.Argument(arg).NotEqual(10);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotEqual_Nullable_Pass_Null()
+    {
+        int? arg = null;
+
+        var act = () => Guard.Argument(arg).NotEqual(5);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotEqual_Delta_Double_Pass()
+    {
+        var arg = 1.0d;
+
+        var act = () => Guard.Argument(arg).NotEqual(1.2d, 0.1d);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotEqual_Delta_Double_Fail()
+    {
+        var arg = 1.0d;
+
+        Action act = () => Guard.Argument(arg).NotEqual(1.05d, 0.1d);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void Same_Pass()
+    {
+        var instance = new RefHolder(1);
+
+        var act = () => Guard.Argument(instance).Same(instance);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Same_Fail()
+    {
+        var arg = new RefHolder(1);
+        var other = new RefHolder(1);
+
+        Action act = () => Guard.Argument(arg).Same(other);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotSame_Pass()
+    {
+        var arg = new RefHolder(1);
+        var other = new RefHolder(2);
+
+        var act = () => Guard.Argument(arg).NotSame(other);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotSame_Fail()
+    {
+        var arg = new RefHolder(1);
+
+        Action act = () => Guard.Argument(arg).NotSame(arg);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
     }
 }
+
+
+
+
+

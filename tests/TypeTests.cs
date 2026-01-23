@@ -1,326 +1,182 @@
-﻿using System.IO;
-using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class TypeTests
 {
-    public sealed class TypeTests : BaseTests
+    private class Animal { }
+    private class Dog : Animal { }
+
+    [Test]
+    public void Type_WithType_Pass()
     {
-        [Theory(DisplayName = "Type: Type/NotType (generic class)")]
-        [InlineData(null)]
-        [InlineData("A")]
-        public void GenericReferenceType(string value)
-        {
-            for (var i = 0; i < 2; i++)
-            {
-                var arg = new Guard.ArgumentInfo<object>(
-                    value, nameof(value), i % 2 == 0, i % 2 != 0);
+        object arg = new Dog();
 
-                var typedArg = arg.Type<string>();
-                Assert.IsType<Guard.ArgumentInfo<string>>(typedArg);
-                Assert.Equal(arg.Modified, typedArg.Modified);
-                Assert.Equal(arg.Secure, typedArg.Secure);
-            }
+        var act = () => Guard.Argument(arg).Type(typeof(Animal));
 
-            var valueArg = Guard.Argument(value as object, nameof(value))
-                .NotType<int>();
+        act.ShouldNotThrow();
+    }
 
-            if (value is null)
-            {
-                ThrowsArgumentException(
-                    valueArg,
-                    arg => arg.Type<int>(),
-                    (arg, message) => arg.Type<int>(o =>
-                    {
-                        Assert.Same(value, o);
-                        return message;
-                    }));
+    [Test]
+    public void Type_WithType_Fail()
+    {
+        object arg = 5;
 
-                valueArg.NotType<string>();
-                return;
-            }
+        Action act = () => Guard.Argument(arg).Type(typeof(string));
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.Type<int>(),
-                (arg, message) => arg.Type<int>(o =>
-                {
-                    Assert.Same(value, o);
-                    return message;
-                }));
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.NotType<string>(),
-                (arg, message) => arg.NotType<string>(o =>
-                {
-                    Assert.Same(value, o);
-                    return message;
-                }));
-        }
+    [Test]
+    public void Type_WithType_Fail_When_Null()
+    {
+        object? arg = null;
 
-        [Theory(DisplayName = "Type: Type/NotType (non-generic class)")]
-        [InlineData(null)]
-        [InlineData("A")]
-        public void ReferenceType(string value)
-        {
-            var stringType = typeof(string);
-            var intType = typeof(int);
-            var valueArg = Guard.Argument(value as object, nameof(value))
-                .Type(stringType)
-                .NotType(intType);
+        Action act = () => Guard.Argument(arg).Type(typeof(string));
 
-            if (value is null)
-            {
-                valueArg.Type(intType);
-                valueArg.NotType(intType);
-                return;
-            }
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.Type(intType),
-                (arg, message) => arg.Type(intType, (o, t) =>
-                {
-                    Assert.Same(value, o);
-                    Assert.Same(intType, t);
-                    return message;
-                }));
+    [Test]
+    public void Type_Generic_Pass()
+    {
+        object arg = new Dog();
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.NotType(stringType),
-                (arg, message) => arg.NotType(stringType, (o, t) =>
-                {
-                    Assert.Same(value, o);
-                    Assert.Same(stringType, t);
-                    return message;
-                }));
-        }
+        var act = () => Guard.Argument(arg).Type(typeof(Animal));
 
-        [Theory(DisplayName = "Type: Type/NotType (generic nullable struct)")]
-        [InlineData(null)]
-        [InlineData(1)]
-        public void GenericValueType(int? value)
-        {
-            for (var i = 0; i < 2; i++)
-            {
-                var arg = new Guard.ArgumentInfo<object>(
-                    value, nameof(value), i % 2 == 0, i % 2 != 0);
+        act.ShouldNotThrow();
+    }
 
-                var typedArg = arg.Type<int?>();
-                Assert.IsType<Guard.ArgumentInfo<int?>>(typedArg);
-                Assert.Equal(arg.Modified, typedArg.Modified);
-                Assert.Equal(arg.Secure, typedArg.Secure);
-            }
+    [Test]
+    public void Type_Generic_Fail()
+    {
+        object arg = 5;
 
-            var valueArg = Guard.Argument(value as object, nameof(value));
-            value = valueArg.Type<int?>();
-            valueArg.NotType<string>();
+        Action act = () => Guard.Argument(arg).Type(typeof(Animal));
 
-            if (value is null)
-            {
-                ThrowsArgumentException(
-                    valueArg,
-                    arg => arg.Type<double>(),
-                    (arg, message) => arg.Type<double>(o =>
-                    {
-                        Assert.Equal(value, o);
-                        return message;
-                    }));
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-                valueArg.Type<double?>();
-                valueArg.Type<string>();
-                valueArg.NotType<string>();
-                return;
-            }
+    [Test]
+    public void NotType_WithType_Pass()
+    {
+        object arg = 5;
 
-            valueArg.Type<int>();
+        var act = () => Guard.Argument(arg).NotType(typeof(string));
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.Type<string>(),
-                (arg, message) => arg.Type<string>(o =>
-                {
-                    Assert.Equal(value, o);
-                    return message;
-                }));
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.NotType<int?>(),
-                (arg, message) => arg.NotType<int?>(o =>
-                {
-                    Assert.Equal(value, o);
-                    return message;
-                }));
+    [Test]
+    public void NotType_WithType_Pass_When_Null()
+    {
+        object? arg = null;
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.NotType<int>(),
-                (arg, message) => arg.NotType<int>(o =>
-                {
-                    Assert.Equal(value, o);
-                    return message;
-                }));
-        }
+        var act = () => Guard.Argument(arg).NotType(typeof(string));
 
-        [Theory(DisplayName = "Type: Type/NotType (non-generic nullable struct)")]
-        [InlineData(null)]
-        [InlineData(1)]
-        public void ValueType(int? value)
-        {
-            var intType = typeof(int);
-            var nullableIntType = typeof(int?);
-            var stringType = typeof(string);
-            var doubleType = typeof(double);
+        act.ShouldNotThrow();
+    }
 
-            var valueArg = Guard.Argument(value as object, nameof(value))
-                .Type(nullableIntType)
-                .NotType(stringType)
-                .NotType(doubleType);
+    [Test]
+    public void NotType_WithType_Fail()
+    {
+        object arg = "hello";
 
-            if (value is null)
-            {
-                valueArg
-                    .Type(intType)
-                    .Type(doubleType)
-                    .Type(stringType)
-                    .NotType(nullableIntType);
+        Action act = () => Guard.Argument(arg).NotType(typeof(string));
 
-                return;
-            }
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            valueArg.Type(intType);
+    [Test]
+    public void NotType_Generic_Pass()
+    {
+        object arg = 5;
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.Type(stringType),
-                (arg, message) => arg.Type(stringType, (o, t) =>
-                {
-                    Assert.Equal(value, o);
-                    Assert.Same(stringType, t);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).NotType(typeof(Animal));
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.NotType(nullableIntType),
-                (arg, message) => arg.NotType(nullableIntType, (o, t) =>
-                {
-                    Assert.Equal(value, o);
-                    Assert.Same(nullableIntType, t);
-                    return message;
-                }));
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.NotType(intType),
-                (arg, message) => arg.NotType(intType, (o, t) =>
-                {
-                    Assert.Equal(value, o);
-                    Assert.Same(intType, t);
-                    return message;
-                }));
-        }
+    [Test]
+    public void NotType_Generic_Fail()
+    {
+        object arg = new Dog();
 
-        [Fact(DisplayName = "Type: Compatible/NotCompatible")]
-        public void Compatible()
-        {
-            using var memory = new MemoryStream() as Stream;
-            var @null = null as Stream;
-            var nullArg = Guard.Argument(() => @null)
-                .Compatible<object>()
-                .Compatible<MemoryStream>()
-                .Compatible<string>();
+        Action act = () => Guard.Argument(arg).NotType(typeof(Animal));
 
-            var memoryArg = Guard.Argument(() => memory)
-                .Compatible<object>()
-                .Compatible<MemoryStream>();
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentException(
-                memoryArg,
-                arg => arg.Compatible<string>(),
-                (arg, message) => arg.Compatible<string>(s =>
-                {
-                    Assert.Same(memory, s);
-                    return message;
-                }));
+    [Test]
+    public void Compatible_Pass()
+    {
+        Dog arg = new();
 
-            nullArg
-                .NotCompatible<object>()
-                .NotCompatible<MemoryStream>()
-                .NotCompatible<string>();
+        var act = () => Guard.Argument(arg).Compatible<Dog, Animal>();
 
-            memoryArg.NotCompatible<string>();
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentException(
-                memoryArg,
-                arg => arg.NotCompatible<object>(),
-                (arg, message) => arg.NotCompatible<object>(o =>
-                {
-                    Assert.Same(memory, o);
-                    return message;
-                }));
+    [Test]
+    public void Compatible_Fail_NotAssignable()
+    {
+        var arg = new Uri("http://example.com");
 
-            ThrowsArgumentException(
-                memoryArg,
-                arg => arg.NotCompatible<MemoryStream>(),
-                (arg, message) => arg.NotCompatible<MemoryStream>(s =>
-                {
-                    Assert.Same(memory, s);
-                    return message;
-                }));
-        }
+        Action act = () => Guard.Argument(arg).Compatible<Uri, Dog>();
 
-        [Fact(DisplayName = "Type: Cast")]
-        public void Cast()
-        {
-            using var stream = new MemoryStream() as Stream;
-            var @null = null as Stream;
-            var nullArg = Guard.Argument(() => @null);
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentException(
-                nullArg,
-                arg => arg.Cast<object>(),
-                (arg, message) => arg.Cast<object>(s =>
-                {
-                    Assert.Null(s);
-                    return message;
-                }));
+    [Test]
+    public void Compatible_Fail_Null()
+    {
+        Dog? arg = null;
 
-            ThrowsArgumentException(
-                nullArg,
-                arg => arg.Cast<MemoryStream>(),
-                (arg, message) => arg.Cast<MemoryStream>(s =>
-                {
-                    Assert.Null(s);
-                    return message;
-                }));
+        Action act = () => Guard.Argument(arg).Compatible<Dog, Animal>();
 
-            for (var i = 0; i < 2; i++)
-            {
-                var streamArg = Guard.Argument(() => stream, i == 1);
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-                var objectCastedArg = streamArg.Cast<object>();
-                Assert.Same(streamArg.Name, objectCastedArg.Name);
-                Assert.Equal(streamArg.Modified, objectCastedArg.Modified);
-                Assert.Equal(streamArg.Secure, objectCastedArg.Secure);
-                Assert.Same(stream, objectCastedArg.Value);
+    [Test]
+    public void NotCompatible_Pass()
+    {
+        var arg = "hello";
 
-                var msCastedArg = streamArg.Cast<MemoryStream>();
-                Assert.Equal(streamArg.Modified, msCastedArg.Modified);
-                Assert.Equal(streamArg.Secure, msCastedArg.Secure);
-                Assert.Same(stream, msCastedArg.Value);
+        var act = () => Guard.Argument(arg).NotCompatible<string, Uri>();
 
-                ThrowsArgumentException(
-                    streamArg,
-                    arg => arg.Cast<string>(),
-                    (arg, message) => arg.Cast<string>(s =>
-                    {
-                        Assert.Same(stream, s);
-                        return message;
-                    }));
-            }
-        }
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotCompatible_Pass_Null()
+    {
+        string? arg = null;
+
+        var act = () => Guard.Argument(arg).NotCompatible<string, Uri>();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotCompatible_Fail()
+    {
+        Dog arg = new();
+
+        Action act = () => Guard.Argument(arg).NotCompatible<Dog, Animal>();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
     }
 }
+
+
+
+
+

@@ -1,194 +1,148 @@
-﻿using System;
-using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class UriTests
 {
-    public sealed class UriTests : BaseTests
+    [Test]
+    public void UriAbsolute_Pass()
     {
-        private const string HttpUriScheme = "http"; // Uri.HttpUriScheme
+        var arg = new Uri("https://example.com");
 
-        private const string HttpsUriScheme = "https"; // Uri.HttpsUriScheme
+        var act = () => Guard.Argument(arg).UriAbsolute();
 
-        private const string HttpsUriString = "https://github.com/ftechmax/argdefender";
+        act.ShouldNotThrow();
+    }
 
-        private const string HttpUriString = "http://github.com/ftechmax/argdefender";
+    [Test]
+    public void UriAbsolute_Fail()
+    {
+        var arg = new Uri("/relative", UriKind.Relative);
 
-        private const string RelativeUriString = "/ftechmax/argdefender";
+        Action act = () => Guard.Argument(arg).UriAbsolute();
 
-        [Theory(DisplayName = "URI: Absolute/Relative")]
-        [InlineData(null, null)]
-        [InlineData(HttpsUriString, RelativeUriString)]
-        public void Kind(string absoluteUriString, string relativeUriString)
-        {
-            var absoluteUri = GetUri(absoluteUriString);
-            var absoluteUriArg = Guard.Argument(() => absoluteUri).Absolute();
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            var relativeUri = GetUri(relativeUriString);
-            var relativeUriArg = Guard.Argument(() => relativeUri).Relative();
+    [Test]
+    public void UriRelative_Pass()
+    {
+        var arg = new Uri("/relative", UriKind.Relative);
 
-            if (absoluteUri == null)
-            {
-                absoluteUriArg.Relative();
-                relativeUriArg.Absolute();
-                return;
-            }
+        var act = () => Guard.Argument(arg).UriRelative();
 
-            ThrowsArgumentException(
-                relativeUriArg,
-                arg => arg.Absolute(),
-                (arg, message) => arg.Absolute(u =>
-                {
-                    Assert.Same(relativeUri, u);
-                    return message;
-                }));
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentException(
-                absoluteUriArg,
-                arg => arg.Relative(),
-                (arg, message) => arg.Relative(u =>
-                {
-                    Assert.Same(absoluteUri, u);
-                    return message;
-                }));
-        }
+    [Test]
+    public void UriRelative_Fail()
+    {
+        var arg = new Uri("https://example.com");
 
-        [Theory(DisplayName = "URI: Scheme")]
-        [InlineData(null, null, null)]
-        [InlineData(HttpsUriScheme, HttpsUriString, RelativeUriString)]
-        [InlineData(HttpsUriScheme, HttpsUriString, HttpUriString)]
-        [InlineData(HttpUriScheme, HttpUriString, RelativeUriString)]
-        [InlineData(HttpUriScheme, HttpUriString, HttpsUriScheme)]
-        public void Scheme(string scheme, string validUriString, string invalidUriString)
-        {
-            var validUri = GetUri(validUriString);
-            var validUriArg = Guard.Argument(() => validUri).Scheme(scheme);
+        Action act = () => Guard.Argument(arg).UriRelative();
 
-            var invalidUri = GetUri(invalidUriString);
-            var invalidUriArg = Guard.Argument(() => invalidUri).NotScheme(scheme);
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            if (validUri == null)
-            {
-                validUriArg.NotScheme(scheme);
-                invalidUriArg.Scheme(scheme);
-                return;
-            }
+    [Test]
+    public void UriScheme_Pass()
+    {
+        var arg = new Uri("myapp://example");
 
-            ThrowsArgumentException(
-                invalidUriArg,
-                arg => arg.Scheme(scheme),
-                (arg, message) => arg.Scheme(scheme, (u, s) =>
-                {
-                    Assert.Same(invalidUri, u);
-                    Assert.Same(scheme, s);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).UriScheme("myapp");
 
-            ThrowsArgumentException(
-                validUriArg,
-                arg => arg.NotScheme(scheme),
-                (arg, message) => arg.NotScheme(scheme, (u, s) =>
-                {
-                    Assert.Same(validUri, u);
-                    Assert.Same(scheme, s);
-                    return message;
-                }));
-        }
+        act.ShouldNotThrow();
+    }
 
-        [Theory(DisplayName = "URI: HTTP")]
-        [InlineData(null, null)]
-        [InlineData(HttpUriString, RelativeUriString)]
-        [InlineData(HttpUriString, HttpsUriString)]
-        public void Http(string validUriString, string invalidUriString)
-        {
-            var validUri = GetUri(validUriString);
-            var validUriArg = Guard.Argument(() => validUri).Http().Http(false);
+    [Test]
+    public void UriScheme_Fail_Different()
+    {
+        var arg = new Uri("https://example.com");
 
-            var invalidUri = GetUri(invalidUriString);
-            var invalidUriArg = Guard.Argument(() => invalidUri);
+        Action act = () => Guard.Argument(arg).UriScheme("http");
 
-            if (validUri == null)
-            {
-                invalidUriArg.Http(false);
-                return;
-            }
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentException(
-                invalidUriArg,
-                arg => arg.Http(false),
-                (arg, message) => arg.Http(false, u =>
-                {
-                    Assert.Same(invalidUri, u);
-                    return message;
-                }));
-        }
+    [Test]
+    public void UriScheme_Fail_Relative()
+    {
+        var arg = new Uri("/relative", UriKind.Relative);
 
-        [Theory(DisplayName = "URI: HTTP/S")]
-        [InlineData(null, null)]
-        [InlineData(HttpUriString, RelativeUriString)]
-        [InlineData(HttpsUriString, RelativeUriString)]
-        public void HttpOrHttps(string validUriString, string invalidUriString)
-        {
-            var validUri = GetUri(validUriString);
-            var validUriArg = Guard.Argument(() => validUri).Http().Http(true);
+        Action act = () => Guard.Argument(arg).UriScheme("http");
 
-            var invalidUri = GetUri(invalidUriString);
-            var invalidUriArg = Guard.Argument(() => invalidUri);
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            if (validUri == null)
-            {
-                invalidUriArg.Http();
-                invalidUriArg.Http(true);
-                return;
-            }
+    [Test]
+    public void UriNotScheme_Pass()
+    {
+        var arg = new Uri("https://example.com");
 
-            ThrowsArgumentException(
-                invalidUriArg,
-                arg => arg.Http(),
-                (arg, message) => arg.Http(u =>
-                {
-                    Assert.Same(invalidUri, u);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).UriNotScheme("ftp");
 
-            ThrowsArgumentException(
-                invalidUriArg,
-                arg => arg.Http(true),
-                (arg, message) => arg.Http(true, u =>
-                {
-                    Assert.Same(invalidUri, u);
-                    return message;
-                }));
-        }
+        act.ShouldNotThrow();
+    }
 
-        [Theory(DisplayName = "URI: HTTPS")]
-        [InlineData(null, null)]
-        [InlineData(HttpsUriString, RelativeUriString)]
-        [InlineData(HttpsUriString, HttpUriString)]
-        public void Https(string validUriString, string invalidUriString)
-        {
-            var validUri = GetUri(validUriString);
-            var validUriArg = Guard.Argument(() => validUri).Https();
+    [Test]
+    public void UriNotScheme_Fail()
+    {
+        var arg = new Uri("https://example.com");
 
-            var invalidUri = GetUri(invalidUriString);
-            var invalidUriArg = Guard.Argument(() => invalidUri);
+        Action act = () => Guard.Argument(arg).UriNotScheme("https");
 
-            if (validUri == null)
-            {
-                invalidUriArg.Https();
-                return;
-            }
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentException(
-                invalidUriArg,
-                arg => arg.Https(),
-                (arg, message) => arg.Https(u =>
-                {
-                    Assert.Same(invalidUri, u);
-                    return message;
-                }));
-        }
+    [Test]
+    public void UriHttp_Pass()
+    {
+        var arg = new Uri("http://example.com");
 
-        private static Uri GetUri(string uriString)
-            => uriString != null ? new Uri(uriString, UriKind.RelativeOrAbsolute) : null;
+        var act = () => Guard.Argument(arg).UriHttp();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void UriHttp_Fail()
+    {
+        var arg = new Uri("https://example.com");
+
+        Action act = () => Guard.Argument(arg).UriHttp();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void UriHttps_Pass()
+    {
+        var arg = new Uri("https://example.com");
+
+        var act = () => Guard.Argument(arg).UriHttps();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void UriHttps_Fail()
+    {
+        var arg = new Uri("http://example.com");
+
+        Action act = () => Guard.Argument(arg).UriHttps();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
     }
 }
+
+
+
+
+

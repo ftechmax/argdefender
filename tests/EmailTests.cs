@@ -1,180 +1,152 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
-using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class EmailTests
 {
-    public sealed class EmailTests : BaseTests
+    [Test]
+    public void EmailHasHost_Pass()
     {
-        [Theory(DisplayName = "Email: HasHost/DoesNotHaveHost")]
-        [InlineData(null, "A", "B", false)]
-        [InlineData("a@b.c", "b.c", "c.b", false)]
-        [InlineData("a@b.c", "b.c", "c.b", true)]
-        [InlineData("a@b.c", "B.C", "C.B", false)] // Ordinal case-insensitive.
-        [InlineData("a@b.c", "B.C", "C.B", true)]
-        public void HasHost(string emailString, string host, string nonHost, bool secure)
-        {
-            var email = emailString is null ? null : new MailAddress(emailString);
-            var emailArgument = Guard.Argument(() => email, secure).HasHost(host).DoesNotHaveHost(nonHost);
+        var arg = new MailAddress("user@example.com");
 
-            if (email is null)
-            {
-                emailArgument.HasHost(nonHost).DoesNotHaveHost(host);
-                return;
-            }
+        var act = () => Guard.Argument(arg).EmailHasHost("example.com");
 
-            ThrowsArgumentException(
-                emailArgument,
-                arg => arg.HasHost(nonHost),
-                m => secure != m.Contains(nonHost),
-                (arg, message) => arg.HasHost(nonHost, (e, h) =>
-                {
-                    Assert.Same(email, e);
-                    Assert.Same(nonHost, h);
-                    return message;
-                }));
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentException(
-                emailArgument,
-                arg => arg.DoesNotHaveHost(host),
-                m => secure != m.Contains(host),
-                (arg, message) => arg.DoesNotHaveHost(host, (e, h) =>
-                {
-                    Assert.Same(email, e);
-                    Assert.Same(host, h);
-                    return message;
-                }));
-        }
+    [Test]
+    public void EmailHasHost_Fail()
+    {
+        var arg = new MailAddress("user@example.com");
 
-        [Theory(DisplayName = "Email: HostIn/HostNotIn")]
-        [InlineData(null, "A;B", "C;D", false, false)]
-        [InlineData(null, "A;B", "C;D", true, false)]
-        [InlineData(null, "A;B", "C;D", true, true)]
-        [InlineData("a@b.c", "a.b;b.c", "c.d;d.e", false, false)]
-        [InlineData("a@b.c", "a.b;b.c", "c.d;d.e", false, true)]
-        [InlineData("a@b.c", "a.b;b.c", "c.d;d.e", true, false)]
-        [InlineData("a@b.c", "a.b;b.c", "c.d;d.e", true, true)]
-        [InlineData("a@b.c", "a.b;b.c", "A.B;B.C", false, false)] // The default comparer.
-        [InlineData("a@b.c", "a.b;b.c", "A.B;B.C", false, true)]
-        [InlineData("a@b.c", "a.b;b.c", "A.B;B.C", true, false)] // Collection type's Contains method.
-        [InlineData("a@b.c", "a.b;b.c", "A.B;B.C", true, true)]
-        [InlineData("a@b.c", "a.b;b.c", "", false, false)]
-        [InlineData("a@b.c", "a.b;b.c", "", false, true)]
-        [InlineData("a@b.c", "a.b;b.c", "", true, false)]
-        [InlineData("a@b.c", "a.b;b.c", "", true, true)]
-        public void HostIn(
-            string emailString, string hostsString, string nonHostsString, bool hasContains, bool secure)
-        {
-            var email = emailString is null ? null : new MailAddress(emailString);
-            var emailArg = Guard.Argument(() => email, secure);
-            var hosts = GetHosts(hostsString, hasContains, out var hostsCount);
-            var hostIndex = email is null ? RandomNumber : hosts.Items.TakeWhile(h => h != email.Host).Count();
-            var nonHosts = GetHosts(nonHostsString, hasContains, out var nonHostsCount);
+        Action act = () => Guard.Argument(arg).EmailHasHost("other.com");
 
-            emailArg.HostIn(hosts).HostNotIn(nonHosts);
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            if (email is null)
-            {
-                emailArg.HostIn(nonHosts).HostNotIn(hosts);
-                return;
-            }
+    [Test]
+    public void EmailHasHost_Null_Pass()
+    {
+        MailAddress? arg = null;
 
-            CheckAndReset(nonHosts, containsCalled: true, enumerationCount: nonHostsCount, enumerated: true);
-            ThrowsArgumentException(
-                emailArg,
-                arg => arg.HostIn(nonHosts),
-                m => TestGeneratedMessage(m, nonHosts),
-                (arg, message) => arg.HostIn(nonHosts, (e, h) =>
-                {
-                    Assert.Same(email, e);
-                    Assert.Same(nonHosts, h);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).EmailHasHost("example.com");
 
-            var enumerationCount = GetEnumerationCount(null, nonHostsCount);
-            var forceEnumerated = !secure ? true : default(bool?);
-            CheckAndReset(nonHosts, containsCalled: true, enumerationCount: enumerationCount, forceEnumerated: forceEnumerated);
+        act.ShouldNotThrow();
+    }
 
-            CheckAndReset(hosts, containsCalled: true, enumerationCount: hostIndex + 1);
-            ThrowsArgumentException(
-                emailArg,
-                arg => arg.HostNotIn(hosts),
-                m => TestGeneratedMessage(m, hosts),
-                (arg, message) => arg.HostNotIn(hosts, (e, h) =>
-                {
-                    Assert.Same(email, e);
-                    Assert.Same(hosts, h);
-                    return message;
-                }));
+    [Test]
+    public void EmailDoesNotHaveHost_Pass()
+    {
+        var arg = new MailAddress("user@example.com");
 
-            enumerationCount = GetEnumerationCount(hostIndex, hostsCount);
-            CheckAndReset(hosts, containsCalled: true, enumerationCount: enumerationCount, forceEnumerated: forceEnumerated);
+        var act = () => Guard.Argument(arg).EmailDoesNotHaveHost("other.com");
 
-            int GetEnumerationCount(int? index, int count)
-            {
-                var result = index.HasValue
-                    ? (index.Value + 1) * 2 + (secure ? 0 : count)
-                    : count * (secure ? 2 : 3);
+        act.ShouldNotThrow();
+    }
 
-                if (result == 0)
-                    result++;
+    [Test]
+    public void EmailDoesNotHaveHost_Fail()
+    {
+        var arg = new MailAddress("user@example.com");
 
-                return result;
-            }
+        Action act = () => Guard.Argument(arg).EmailDoesNotHaveHost("example.com");
 
-            bool TestGeneratedMessage(string message, ITestEnumerable<string> enumerable)
-                => secure || enumerable.Items.All(i => message.Contains(i.ToString()));
-        }
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-        [Theory(DisplayName = "Email: HasDisplayName/DoesNotHaveDisplayName")]
-        [InlineData(null, null)]
-        [InlineData("A <a@b.c>", "a@b.c")]
-        public void HasDisplayName(string stringWithDisplayName, string stringWithoutDisplayName)
-        {
-            var withDisplayName = stringWithDisplayName is null ? null : new MailAddress(stringWithDisplayName);
-            var withDisplayNameArg = Guard.Argument(() => withDisplayName).HasDisplayName();
+    [Test]
+    public void EmailHostIn_Pass()
+    {
+        var arg = new MailAddress("user@example.com");
+        var hosts = new[] { "other.com", "example.com" };
 
-            var withoutDisplayName = stringWithoutDisplayName is null ? null : new MailAddress(stringWithoutDisplayName);
-            var withoutDisplayNameArg = Guard.Argument(() => withoutDisplayName).DoesNotHaveDisplayName();
+        var act = () => Guard.Argument(arg).EmailHostIn(hosts);
 
-            if (withDisplayName is null)
-            {
-                withDisplayNameArg.DoesNotHaveDisplayName();
-                withoutDisplayNameArg.HasDisplayName();
-                return;
-            }
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentException(
-                withoutDisplayNameArg,
-                arg => arg.HasDisplayName(),
-                (arg, message) => arg.HasDisplayName(e =>
-                {
-                    Assert.Same(withoutDisplayName, e);
-                    return message;
-                }));
+    [Test]
+    public void EmailHostIn_Fail()
+    {
+        var arg = new MailAddress("user@example.com");
+        var hosts = new[] { "other.com", "another.com" };
 
-            ThrowsArgumentException(
-                withDisplayNameArg,
-                arg => arg.DoesNotHaveDisplayName(),
-                (arg, message) => arg.DoesNotHaveDisplayName(e =>
-                {
-                    Assert.Same(withDisplayName, e);
-                    return message;
-                }));
-        }
+        Action act = () => Guard.Argument(arg).EmailHostIn(hosts);
 
-        private static ITestEnumerable<string> GetHosts(
-            string hostsString, bool hasContains, out int count)
-        {
-            var hosts = hostsString.Split(';');
-            count = hosts.Length;
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            return hasContains
-                ? new EnumerableTests.TestEnumerableWithContains<string>(hosts)
-                : new EnumerableTests.TestEnumerable<string>(hosts);
-        }
+    [Test]
+    public void EmailHostNotIn_Pass()
+    {
+        var arg = new MailAddress("user@example.com");
+        var hosts = new[] { "other.com", "another.com" };
+
+        var act = () => Guard.Argument(arg).EmailHostNotIn(hosts);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EmailHostNotIn_Fail()
+    {
+        var arg = new MailAddress("user@example.com");
+        var hosts = new[] { "example.com", "another.com" };
+
+        Action act = () => Guard.Argument(arg).EmailHostNotIn(hosts);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void EmailHasDisplayName_Pass()
+    {
+        var arg = new MailAddress("user@example.com", "User");
+
+        var act = () => Guard.Argument(arg).EmailHasDisplayName();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EmailHasDisplayName_Fail()
+    {
+        var arg = new MailAddress("user@example.com");
+
+        Action act = () => Guard.Argument(arg).EmailHasDisplayName();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void EmailDoesNotHaveDisplayName_Pass()
+    {
+        var arg = new MailAddress("user@example.com");
+
+        var act = () => Guard.Argument(arg).EmailDoesNotHaveDisplayName();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EmailDoesNotHaveDisplayName_Fail()
+    {
+        var arg = new MailAddress("user@example.com", "User");
+
+        Action act = () => Guard.Argument(arg).EmailDoesNotHaveDisplayName();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
     }
 }
+
+
+
+
+

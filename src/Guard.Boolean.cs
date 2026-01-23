@@ -1,100 +1,58 @@
-﻿#nullable enable
+using System.Runtime.CompilerServices;
 
-using System;
-using System.Diagnostics;
-using JetBrains.Annotations;
+namespace ArgDefender;
 
-namespace ArgDefender
+public static partial class Guard
 {
-    /// <content>Provides preconditions for <see cref="bool" /> arguments.</content>
-    public static partial class Guard
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<bool> True(
+        in this ArgumentInfo<bool> argument, Func<bool, string>? message = null)
     {
-        /// <summary>Requires the boolean argument to be <c>true</c>.</summary>
-        /// <param name="argument">The boolean argument.</param>
-        /// <param name="message">
-        ///     The message of the exception that will be thrown if the precondition is not satisfied.
-        /// </param>
-        /// <returns><paramref name="argument" />.</returns>
-        /// <exception cref="ArgumentException"><paramref name="argument" /> value is <c>false</c>.</exception>
-        [AssertionMethod]
-        [DebuggerStepThrough]
-        [GuardFunction("Boolean", "gtrue")]
-        public static ref readonly ArgumentInfo<bool> True(
-            in this ArgumentInfo<bool> argument, string? message = null)
+        if (argument.Value)
         {
-            if (!argument.Value)
-            {
-                var m = message ?? Messages.True(argument);
-                throw Fail(new ArgumentException(m, argument.Name));
-            }
-
             return ref argument;
         }
 
-        /// <summary>Requires the nullable boolean argument to be <c>true</c> or <c>null</c>.</summary>
-        /// <param name="argument">The boolean argument.</param>
-        /// <param name="message">
-        ///     The message of the exception that will be thrown if the precondition is not satisfied.
-        /// </param>
-        /// <returns><paramref name="argument" />.</returns>
-        /// <exception cref="ArgumentException"><paramref name="argument" /> value is <c>false</c>.</exception>
-        [AssertionMethod]
-        [DebuggerStepThrough]
-        [GuardFunction("Boolean", "gtrue")]
-        public static ref readonly ArgumentInfo<bool?> True(
-            in this ArgumentInfo<bool?> argument, string? message = null)
-        {
-            if (argument.Value == false)
-            {
-                var m = message ?? Messages.True(argument);
-                throw Fail(new ArgumentException(m, argument.Name));
-            }
+        var m = message?.Invoke(argument.Value) ?? Messages.True(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<bool?> True(
+        in this ArgumentInfo<bool?> argument, Func<bool?, string>? message = null)
+    {
+        if (argument.Value == true)
+        {
             return ref argument;
         }
 
-        /// <summary>Requires the boolean argument to be <c>false</c>.</summary>
-        /// <param name="argument">The boolean argument.</param>
-        /// <param name="message">
-        ///     The message of the exception that will be thrown if the precondition is not satisfied.
-        /// </param>
-        /// <returns><paramref name="argument" />.</returns>
-        /// <exception cref="ArgumentException"><paramref name="argument" /> value is <c>true</c>.</exception>
-        [AssertionMethod]
-        [DebuggerStepThrough]
-        [GuardFunction("Boolean", "gfalse")]
-        public static ref readonly ArgumentInfo<bool> False(
-            in this ArgumentInfo<bool> argument, string? message = null)
-        {
-            if (argument.Value)
-            {
-                var m = message ?? Messages.False(argument);
-                throw Fail(new ArgumentException(m, argument.Name));
-            }
+        var m = message?.Invoke(argument.Value) ?? Messages.True(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<bool> False(
+        in this ArgumentInfo<bool> argument, Func<bool, string>? message = null)
+    {
+        if (!argument.Value)
+        {
             return ref argument;
         }
 
-        /// <summary>Requires the nullable boolean argument to be <c>false</c> or <c>null</c>.</summary>
-        /// <param name="argument">The boolean argument.</param>
-        /// <param name="message">
-        ///     The message of the exception that will be thrown if the precondition is not satisfied.
-        /// </param>
-        /// <returns><paramref name="argument" />.</returns>
-        /// <exception cref="ArgumentException"><paramref name="argument" /> value is <c>true</c>.</exception>
-        [AssertionMethod]
-        [DebuggerStepThrough]
-        [GuardFunction("Boolean", "gfalse")]
-        public static ref readonly ArgumentInfo<bool?> False(
-            in this ArgumentInfo<bool?> argument, string? message = null)
-        {
-            if (argument.GetValueOrDefault())
-            {
-                var m = message ?? Messages.False(argument);
-                throw Fail(new ArgumentException(m, argument.Name));
-            }
+        var m = message?.Invoke(argument.Value) ?? Messages.False(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<bool?> False(
+        in this ArgumentInfo<bool?> argument, Func<bool?, string>? message = null)
+    {
+        if (argument.Value == false)
+        {
             return ref argument;
         }
+
+        var m = message?.Invoke(argument.Value) ?? Messages.False(argument);
+        throw new ArgumentException(m, argument.Name);
     }
 }

@@ -1,44 +1,117 @@
-﻿using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class BooleanTests
 {
-    public sealed class BooleanTests : BaseTests
+    [Test]
+    public void True_Pass()
     {
-        [Theory(DisplayName = "Boolean: True/False")]
-        [InlineData(null, null)]
-        [InlineData(true, false)]
-        public void GuardSupportsBooleans(bool? @true, bool? @false)
-        {
-            var nullableTrueArg = Guard.Argument(() => @true).True();
-            var nullableFalseArg = Guard.Argument(() => @false).False();
-            if (!@true.HasValue)
-            {
-                nullableTrueArg.False();
-                nullableFalseArg.True();
-                return;
-            }
+        var arg = true;
 
-            ThrowsArgumentException(
-                nullableFalseArg,
-                arg => arg.True(),
-                (arg, message) => arg.True(message));
+        var act = () => Guard.Argument(arg).True();
 
-            ThrowsArgumentException(
-                nullableTrueArg,
-                arg => arg.False(),
-                (arg, message) => arg.False(message));
+        act.ShouldNotThrow();
+    }
 
-            var trueArg = Guard.Argument(@true.Value, nameof(@true)).True();
-            var falseArg = Guard.Argument(@false.Value, nameof(@false)).False();
-            ThrowsArgumentException(
-                falseArg,
-                arg => arg.True(),
-                (arg, message) => arg.True(message));
+    [Test]
+    public void True_Fail()
+    {
+        var arg = false;
 
-            ThrowsArgumentException(
-                trueArg,
-                arg => arg.False(),
-                (arg, message) => arg.False(message));
-        }
+        Action act = () => Guard.Argument(arg).True();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void True_Nullable_Pass()
+    {
+        bool? arg = true;
+
+        var act = () => Guard.Argument(arg).True();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void True_Nullable_Fail_False()
+    {
+        bool? arg = false;
+
+        Action act = () => Guard.Argument(arg).True();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void True_Nullable_Fail_Null()
+    {
+        bool? arg = null;
+
+        Action act = () => Guard.Argument(arg).True();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void False_Pass()
+    {
+        var arg = false;
+
+        var act = () => Guard.Argument(arg).False();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void False_Fail()
+    {
+        var arg = true;
+
+        Action act = () => Guard.Argument(arg).False();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void False_Nullable_Pass()
+    {
+        bool? arg = false;
+
+        var act = () => Guard.Argument(arg).False();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void False_Nullable_Fail_True()
+    {
+        bool? arg = true;
+
+        Action act = () => Guard.Argument(arg).False();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void False_Nullable_Fail_Null()
+    {
+        bool? arg = null;
+
+        Action act = () => Guard.Argument(arg).False();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
     }
 }
+
+
+
+
+

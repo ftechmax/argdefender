@@ -1,56 +1,75 @@
 # Standard Validations
 
-Below is a complete list of validations that are included with the library. Optional parameters that
-allow you to specify custom exception messages are omitted for brevity.
+This document lists the built-in guards included in ArgDefender.
 
-All validations are documented using the XML documentation comments, so IntelliSense works but I haven't
-yet decided which tool to use for converting the XML output to HTML. Therefore there is no online
-documentation yet.
+Each guard is an extension method on `ArgumentInfo<T>` and is typically used via
+`Guard.Argument(value)`.
 
 ### Null Guards
 
-For `ArgumentInfo<T> where T : class` and `ArgumentInfo<T?> where T : struct`
+For `ArgumentInfo<T>` where `T : class` and `ArgumentInfo<T?>` where `T : struct`:
 * `Null()`
-* `NotNull()` - When called for an argument of `T?`, returns an argument of `T`.
+* `NotNull()`
 
-Static without type constraints:
+Static:
 * `NotAllNull(ArgumentInfo<T1>, ArgumentInfo<T2>)`
 * `NotAllNull(ArgumentInfo<T1>, ArgumentInfo<T2>, ArgumentInfo<T3>)`
 
 ### Equality Guards
 
-For `ArgumentInfo<T>`
+For `ArgumentInfo<T>`:
 * `Equal(T)`
-* `Equal(T, IEqualityComparer<T>)`
 * `NotEqual(T)`
-* `NotEqual(T, IEqualityComparer<T>)`
 
-For `ArgumentInfo<T> where T : class`
-* `Same(T)`
-* `NotSame(T)`
+For `ArgumentInfo<T?>` where `T : struct`:
+* `Equal(T)`
+* `NotEqual(T)`
 
-For `ArgumentInfo<T|T?> where T : struct`
+For `ArgumentInfo<T>` where `T : class`:
+* `Same(object)`
+* `NotSame(object)`
+
+For `ArgumentInfo<T>` and `ArgumentInfo<T?>` where `T : struct`:
 * `Default()`
 * `NotDefault()`
 
 ### Comparison Guards
 
-For `ArgumentInfo<T> where T : IComparable<T>`
+For `ArgumentInfo<T>` where `T : IComparable<T>`:
 * `Min(T)`
 * `Max(T)`
 * `GreaterThan(T)`
 * `LessThan(T)`
 * `InRange(T, T)`
+* `Zero()`
+* `NotZero()`
+* `Positive()`
+* `NotPositive()`
+* `Negative()`
+* `NotNegative()`
+
+For `ArgumentInfo<T?>` where `T : struct, IComparable<T>`:
+* `Min(T)`
+* `Max(T)`
+* `GreaterThan(T)`
+* `LessThan(T)`
+* `InRange(T, T)`
+* `Zero()`
+* `NotZero()`
+* `Positive()`
+* `NotPositive()`
+* `Negative()`
+* `NotNegative()`
 
 ### Boolean Guards
 
-For `ArgumentInfo<bool|bool?>`
+For `ArgumentInfo<bool>` and `ArgumentInfo<bool?>`:
 * `True()`
 * `False()`
 
 ### Collection Guards
 
-For `ArgumentInfo<T> where T : IEnumerable`
+For `ArgumentInfo<TCollection>` where `TCollection : IEnumerable`:
 * `Empty()`
 * `NotEmpty()`
 * `Count(int)`
@@ -58,24 +77,18 @@ For `ArgumentInfo<T> where T : IEnumerable`
 * `MinCount(int)`
 * `MaxCount(int)`
 * `CountInRange(int, int)`
-* `Contains<TItem>(TItem)`
-* `Contains<TItem>(TItem, IEqualityComparer<TItem>)`
-* `DoesNotContain<TItem>(TItem)`
-* `DoesNotContain<TItem>(TItem, IEqualityComparer<TItem>)`
-* `ContainsNull()`
-* `DoesNotContainNull()`
-* `DoesNotContainDuplicate()`
-* `DoesNotContainDuplicate(IEqualityComparer<TItem>)`
 
-For `ArgumentInfo<T>`
-* `In<TCollection>(TCollection)`
-* `In<TCollection>(TCollection, IEqualityComparer<T>)`
-* `NotIn<TCollection>(TCollection)`
-* `NotIn<TCollection>(TCollection, IEqualityComparer<T>)`
+For `ArgumentInfo<TCollection>` where `TCollection : IEnumerable<TItem>`:
+* `Contains(TItem)`
+* `DoesNotContain(TItem)`
+
+For `ArgumentInfo<T>`:
+* `In(IEnumerable)`
+* `NotIn(IEnumerable)`
 
 ### String Guards
 
-For `ArgumentInfo<string>`
+For `ArgumentInfo<string>`:
 * `Empty()`
 * `NotEmpty()`
 * `WhiteSpace()`
@@ -85,33 +98,34 @@ For `ArgumentInfo<string>`
 * `MinLength(int)`
 * `MaxLength(int)`
 * `LengthInRange(int, int)`
-* `Equal(string, StringComparison)`
-* `NotEqual(string, StringComparison)`
 * `StartsWith(string)`
-* `StartsWith(string, StringComparison)`
 * `DoesNotStartWith(string)`
-* `DoesNotStartWith(string, StringComparison)`
 * `EndsWith(string)`
-* `EndsWith(string, StringComparison)`
 * `DoesNotEndWith(string)`
-* `DoesNotEndWith(string, StringComparison)`
 * `Matches(string)`
-* `Matches(string, TimeSpan)`
-* `Matches(Regex)`
+* `MatchesTimeout(string, TimeSpan)`
 * `DoesNotMatch(string)`
-* `DoesNotMatch(string, TimeSpan)`
-* `DoesNotMatch(Regex)`
+* `DoesNotMatchTimeout(string, TimeSpan)`
 
-### Time Guards
+### Guid Guards
 
-For `ArgumentInfo<DateTime|DateTime?>`
+For `ArgumentInfo<Guid>` and `ArgumentInfo<Guid?>`:
+* `Empty()`
+* `NotEmpty()`
 
-* `KindSpecified()`
-* `KindUnspecified()`
+### Enum Guards
 
-### Floating-Point Number Guards
+For `ArgumentInfo<T>` and `ArgumentInfo<T?>` where `T : struct, Enum`:
+* `Enum()`
+* `EnumDefined()`
+* `EnumNone()`
+* `EnumNotNone()`
+* `EnumHasFlag(T)`
+* `EnumDoesNotHaveFlag(T)`
 
-For `ArgumentInfo<float|float?|double|double?>`
+### Floating-Point Guards
+
+For `ArgumentInfo<float>` and `ArgumentInfo<float?>`:
 * `NaN()`
 * `NotNaN()`
 * `Infinity()`
@@ -120,74 +134,65 @@ For `ArgumentInfo<float|float?|double|double?>`
 * `NotPositiveInfinity()`
 * `NegativeInfinity()`
 * `NotNegativeInfinity()`
-* `Equal(T, T)` - Approx. equality.
-* `NotEqual(T, T)` - Approx. unequality.
+* `Equal(float, float)` - Approx equality.
+* `NotEqual(float, float)` - Approx inequality.
+
+For `ArgumentInfo<double>` and `ArgumentInfo<double?>`:
+* `NaN()`
+* `NotNaN()`
+* `Infinity()`
+* `NotInfinity()`
+* `PositiveInfinity()`
+* `NotPositiveInfinity()`
+* `NegativeInfinity()`
+* `NotNegativeInfinity()`
+* `Equal(double, double)` - Approx equality.
+* `NotEqual(double, double)` - Approx inequality.
+
+### Time Guards
+
+For `ArgumentInfo<DateTime>` and `ArgumentInfo<DateTime?>`:
+* `KindSpecified()`
+* `KindUnspecified()`
+
+For `ArgumentInfo<DateTimeOffset>` and `ArgumentInfo<DateTimeOffset?>`:
+* `KindSpecified()`
+* `KindUnspecified()`
+
+### TimeSpan Guards
+
+For `ArgumentInfo<TimeSpan>` and `ArgumentInfo<TimeSpan?>`:
+* `Zero()`
+* `NotZero()`
+* `Positive()`
+* `NotPositive()`
+* `Negative()`
+* `NotNegative()`
 
 ### URI Guards
 
-For `ArgumentInfo<Uri>`
-* `Absolute`
-* `Relative`
-* `Scheme(string)`
-* `NotScheme(string)`
-* `Http()`
-* `Http(bool)`
-* `Https()`
-
-### Enum Guards
-For `ArgumentInfo<T|T?> where T : struct, Enum`
-* `Defined()`
-* `HasFlag(T)`
-* `DoesNotHaveFlag(T)`
+For `ArgumentInfo<Uri>`:
+* `UriAbsolute()`
+* `UriRelative()`
+* `UriScheme(string)`
+* `UriNotScheme(string)`
+* `UriHttp()`
+* `UriHttps()`
 
 ### Email Guards
-For `ArgumentInfo<MailAddress>`
-* `HasHost(string)`
-* `DoesNotHaveHost(string)`
-* `HostIn(IEnumerable<string>)`
-* `HostNotIn(IEnumerable<string>)`
-* `HasDisplayName()`
-* `DoesNotHaveDisplayName()`
+
+For `ArgumentInfo<MailAddress>`:
+* `EmailHasHost(string)`
+* `EmailDoesNotHaveHost(string)`
+* `EmailHostIn(IEnumerable<string>)`
+* `EmailHostNotIn(IEnumerable<string>)`
+* `EmailHasDisplayName()`
+* `EmailDoesNotHaveDisplayName()`
 
 ### Type Guards
 
-For `ArgumentInfo<T>`
-* `Compatible<TTarget>()`
-* `NotCompatible<TTarget>()`
-* `Cast<TTarget>` - Returns an argument of `TTarget`
-
-For `ArgumentInfo<object>`
-* `Type<T>()` - Returns an argument of `T`.
-* `NotType<T>()`
+For `ArgumentInfo<T>`:
 * `Type(Type)`
 * `NotType(Type)`
-
-### Member Guards
-For `ArgumentInfo<T>`
-* `Member<TMember>(Expression<Func<T, TMember>>, Action<ArgumentInfo<TMember>>)`
-* `Member<TMember>(Expression<Func<T, TMember>>, Action<ArgumentInfo<TMember>>, bool)`
-
-### Normalization Guards
-
-For `ArgumentInfo<T>`
-* `Modify<TTarget>(TTarget value)` - Returns an argument of `TTarget`
-* `Modify<TTarget>(Func<T, TTarget>)` - Returns an argument of `TTarget`
-* `Wrap<TTarget>(Func<T, TTarget>)` - Returns an argument of `TTarget`
-
-For `ArgumentInfo<T> where T : class, ICloneable`
-* `Clone()`
-
-### Predicate Guards
-
-For `ArgumentInfo<T>`
-* `Require(bool)`
-* `Require<TException>(bool)`
-* `Require(Func<T, bool>)`
-* `Require<TException>(Func<T, bool>)`
-
-### State Guards
-
-For validating instance states instead of method arguments:
-* `Operation(bool)` - Throws `InvalidOperationException` for `false`
-* `Support(bool)` - Throws `NotSupportedException` for `false`
-* `Disposal(bool, string)` - Throws `ObjectDisposedException` for `true`
+* `Compatible<TArgument, TTarget>()`
+* `NotCompatible<TArgument, TTarget>()`

@@ -7,53 +7,60 @@ on:
     paths:
       - 'src/**'
   workflow_dispatch:
-    
+
 jobs:
   release:
     name: Release
     runs-on: [ubuntu-latest]
-    container: mcr.microsoft.com/dotnet/sdk:6.0-alpine
+    env:
+      DOTNET_INSTALL_DIR: './.dotnet'
     permissions:
       contents: write
       packages: write
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
+      - name: Install DotNet
+        uses: actions/setup-dotnet@v4
         with:
-          versionSpec: "5.x"
-          preferLatestVersion: true
+          dotnet-version: '10.0.x'
 
-      - name: Determine Version
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4.2.0
         with:
-          useConfigFile: true
+          versionSpec: '6.x'
+
+      - name: Run GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v4.2.0
+        with:
+          configFilePath: .github/gitversion.yaml
 
       - name: Run dotnet tests and coverage
-        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        run: dotnet test ./ArgDefender.sln --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
       - name: Create package
-        run: dotnet pack ./src/Guard.csproj -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} -c Release
+        run: dotnet pack ./src/ArgDefender.csproj -p:PackageVersion=${{ steps.gitversion.outputs.MajorMinorPatch }} -c Release
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./TestResults/**/coverage.cobertura.xml
+          fail_ci_if_error: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Publish package
-        run: dotnet nuget push ./artifacts/*.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.gitversion.outputs.semVer }}
+          tag: ${{ steps.gitversion.outputs.MajorMinorPatch }}
+          name: Release ${{ steps.gitversion.outputs.MajorMinorPatch }}
           commit: "main"
-          name: Release ${{ steps.gitversion.outputs.semVer }}
           generateReleaseNotes: true
-          token: ${{ secrets.GITHUB_TOKEN }}

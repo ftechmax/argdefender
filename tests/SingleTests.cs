@@ -1,281 +1,315 @@
-﻿using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class SingleTests
 {
-    public sealed class SingleTests : BaseTests
+    [Test]
+    public void NaN_Pass()
     {
-        [Theory(DisplayName = "Single: NaN/NotNaN")]
-        [InlineData(null, null)]
-        [InlineData(float.NaN, float.NegativeInfinity)]
-        [InlineData(float.NaN, -1.0f)]
-        [InlineData(float.NaN, 0.0f)]
-        [InlineData(float.NaN, 1.0f)]
-        [InlineData(float.NaN, float.PositiveInfinity)]
-        public void NaN(float? nan, float? nonNaN)
-        {
-            var nullableNaNArg = Guard.Argument(() => nan).NaN();
-            var nullableNonNaNArg = Guard.Argument(() => nonNaN).NotNaN();
-            if (!nan.HasValue)
-            {
-                nullableNaNArg.NotNaN();
-                nullableNonNaNArg.NaN();
-                return;
-            }
+        var arg = float.NaN;
 
-            ThrowsArgumentOutOfRangeException(
-                nullableNonNaNArg,
-                arg => arg.NaN(),
-                (arg, message) => arg.NaN(f =>
-                {
-                    Assert.Equal(nonNaN, f);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).NaN();
 
-            ThrowsArgumentOutOfRangeException(
-                nullableNaNArg,
-                arg => arg.NotNaN(),
-                (arg, message) => arg.NotNaN(message));
+        act.ShouldNotThrow();
+    }
 
-            var nanArg = Guard.Argument(nan.Value, nameof(nan)).NaN();
-            var nonNaNArg = Guard.Argument(nonNaN.Value, nameof(nonNaN)).NotNaN();
-            ThrowsArgumentOutOfRangeException(
-                nonNaNArg,
-                arg => arg.NaN(),
-                (arg, message) => arg.NaN(f =>
-                {
-                    Assert.Equal(nonNaN, f);
-                    return message;
-                }));
+    [Test]
+    public void NaN_Fail()
+    {
+        var arg = 1f;
 
-            ThrowsArgumentOutOfRangeException(
-                nanArg,
-                arg => arg.NotNaN(),
-                (arg, message) => arg.NotNaN(message));
-        }
+        Action act = () => Guard.Argument(arg).NaN();
 
-        [Theory(DisplayName = "Single: Infinity/NotInfinity")]
-        [InlineData(null, null)]
-        [InlineData(float.NegativeInfinity, float.NaN)]
-        [InlineData(float.NegativeInfinity, -1.0f)]
-        [InlineData(float.NegativeInfinity, 0.0f)]
-        [InlineData(float.NegativeInfinity, 1.0f)]
-        [InlineData(float.PositiveInfinity, float.NaN)]
-        [InlineData(float.PositiveInfinity, -1.0f)]
-        [InlineData(float.PositiveInfinity, -0.0f)]
-        [InlineData(float.PositiveInfinity, 1.0f)]
-        public void Infinity(float? infinity, float? nonInfinity)
-        {
-            var nullableInfinityArg = Guard.Argument(() => infinity).Infinity();
-            var nullableNonInfinityArg = Guard.Argument(() => nonInfinity).NotInfinity();
-            if (!infinity.HasValue)
-            {
-                nullableInfinityArg.NotInfinity();
-                nullableNonInfinityArg.Infinity();
-                return;
-            }
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentOutOfRangeException(
-                nullableNonInfinityArg,
-                arg => arg.Infinity(),
-                (arg, message) => arg.Infinity(f =>
-                {
-                    Assert.Equal(nonInfinity, f);
-                    return message;
-                }));
+    [Test]
+    public void NotNaN_Pass()
+    {
+        var arg = 2f;
 
-            ThrowsArgumentOutOfRangeException(
-                nullableInfinityArg,
-                arg => arg.NotInfinity(),
-                (arg, message) => arg.NotInfinity(f =>
-                {
-                    Assert.Equal(infinity, f);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).NotNaN();
 
-            var infinityArg = Guard.Argument(infinity.Value, nameof(infinity)).Infinity();
-            var nonInfinityArg = Guard.Argument(nonInfinity.Value, nameof(nonInfinity)).NotInfinity();
-            ThrowsArgumentOutOfRangeException(
-                nonInfinityArg,
-                arg => arg.Infinity(),
-                (arg, message) => arg.Infinity(f =>
-                {
-                    Assert.Equal(nonInfinity, f);
-                    return message;
-                }));
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentOutOfRangeException(
-                infinityArg,
-                arg => arg.NotInfinity(),
-                (arg, message) => arg.NotInfinity(f =>
-                {
-                    Assert.Equal(infinity, f);
-                    return message;
-                }));
-        }
+    [Test]
+    public void NotNaN_Fail()
+    {
+        var arg = float.NaN;
 
-        [Theory(DisplayName = "Single: PositiveInfinity/NotPositiveInfinity")]
-        [InlineData(null, null)]
-        [InlineData(float.PositiveInfinity, float.NaN)]
-        [InlineData(float.PositiveInfinity, float.NegativeInfinity)]
-        [InlineData(float.PositiveInfinity, -1.0f)]
-        [InlineData(float.PositiveInfinity, 0.0f)]
-        [InlineData(float.PositiveInfinity, 1.0f)]
-        public void PositiveInfinity(float? infinity, float? nonInfinity)
-        {
-            var nullableInfinityArg = Guard.Argument(() => infinity).PositiveInfinity();
-            var nullableNonInfinityArg = Guard.Argument(() => nonInfinity).NotPositiveInfinity();
-            if (!infinity.HasValue)
-            {
-                nullableInfinityArg.NotPositiveInfinity();
-                nullableNonInfinityArg.PositiveInfinity();
-                return;
-            }
+        Action act = () => Guard.Argument(arg).NotNaN();
 
-            ThrowsArgumentOutOfRangeException(
-                nullableNonInfinityArg,
-                arg => arg.PositiveInfinity(),
-                (arg, message) => arg.PositiveInfinity(f =>
-                {
-                    Assert.Equal(nonInfinity, f);
-                    return message;
-                }));
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentOutOfRangeException(
-                nullableInfinityArg,
-                arg => arg.NotPositiveInfinity(),
-                (arg, message) => arg.NotPositiveInfinity(message));
+    [Test]
+    public void Infinity_Pass_Positive()
+    {
+        var arg = float.PositiveInfinity;
 
-            var infinityArg = Guard.Argument(infinity.Value, nameof(infinity)).PositiveInfinity();
-            var nonInfinityArg = Guard.Argument(nonInfinity.Value, nameof(nonInfinity)).NotPositiveInfinity();
-            ThrowsArgumentOutOfRangeException(
-                nonInfinityArg,
-                arg => arg.PositiveInfinity(),
-                (arg, message) => arg.PositiveInfinity(f =>
-                {
-                    Assert.Equal(nonInfinity, f);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).Infinity();
 
-            ThrowsArgumentOutOfRangeException(
-                infinityArg,
-                arg => arg.NotPositiveInfinity(),
-                (arg, message) => arg.NotPositiveInfinity(message));
-        }
+        act.ShouldNotThrow();
+    }
 
-        [Theory(DisplayName = "Single: NegativeInfinity/NotNegativeInfinity")]
-        [InlineData(null, null)]
-        [InlineData(float.NegativeInfinity, float.NaN)]
-        [InlineData(float.NegativeInfinity, -1.0f)]
-        [InlineData(float.NegativeInfinity, 0.0f)]
-        [InlineData(float.NegativeInfinity, 1.0f)]
-        [InlineData(float.NegativeInfinity, float.PositiveInfinity)]
-        public void NegativeInfinity(float? infinity, float? nonInfinity)
-        {
-            var nullableInfinityArg = Guard.Argument(() => infinity).NegativeInfinity();
-            var nullableNonInfinityArg = Guard.Argument(() => nonInfinity).NotNegativeInfinity();
-            if (!infinity.HasValue)
-            {
-                nullableInfinityArg.NotNegativeInfinity();
-                nullableNonInfinityArg.NegativeInfinity();
-                return;
-            }
+    [Test]
+    public void Infinity_Pass_Negative()
+    {
+        var arg = float.NegativeInfinity;
 
-            ThrowsArgumentOutOfRangeException(
-                nullableNonInfinityArg,
-                arg => arg.NegativeInfinity(),
-                (arg, message) => arg.NegativeInfinity(f =>
-                {
-                    Assert.Equal(nonInfinity, f);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).Infinity();
 
-            ThrowsArgumentOutOfRangeException(
-                nullableInfinityArg,
-                arg => arg.NotNegativeInfinity(),
-                (arg, message) => arg.NotNegativeInfinity(message));
+        act.ShouldNotThrow();
+    }
 
-            var infinityArg = Guard.Argument(infinity.Value, nameof(infinity)).NegativeInfinity();
-            var nonInfinityArg = Guard.Argument(nonInfinity.Value, nameof(nonInfinity)).NotNegativeInfinity();
-            ThrowsArgumentOutOfRangeException(
-                nonInfinityArg,
-                arg => arg.NegativeInfinity(),
-                (arg, message) => arg.NegativeInfinity(f =>
-                {
-                    Assert.Equal(nonInfinity, f);
-                    return message;
-                }));
+    [Test]
+    public void Infinity_Fail()
+    {
+        var arg = 10f;
 
-            ThrowsArgumentOutOfRangeException(
-                infinityArg,
-                arg => arg.NotNegativeInfinity(),
-                (arg, message) => arg.NotNegativeInfinity(message));
-        }
+        Action act = () => Guard.Argument(arg).Infinity();
 
-        [Theory(DisplayName = "Single: Equal/NotEqual w/ delta")]
-        [InlineData(null, .0, .0, .0)]
-        [InlineData(.3305F, .33F, .3F, .01F)]
-        [InlineData(.331F, .332F, .3F, .01F)]
-        public void Equal(float? value, float equal, float nonEqual, float delta)
-        {
-            Test(value, nameof(value), NullableTest, NonNullableTest);
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            void NullableTest(Guard.ArgumentInfo<float?> nullableValueArg)
-            {
-                nullableValueArg.Equal(equal, delta).NotEqual(nonEqual, delta);
-                if (!nullableValueArg.HasValue)
-                {
-                    nullableValueArg.Equal(nonEqual, delta).NotEqual(equal, delta);
-                    return;
-                }
+    [Test]
+    public void NotInfinity_Pass()
+    {
+        var arg = 5f;
 
-                ThrowsArgumentOutOfRangeException(
-                    nullableValueArg,
-                    arg => arg.Equal(nonEqual, delta),
-                    m => nullableValueArg.Secure != m.Contains(nonEqual.ToString()),
-                    (arg, message) => arg.Equal(nonEqual, delta, (v, o) =>
-                    {
-                        Assert.Equal(value, v);
-                        Assert.Equal(nonEqual, o);
-                        return message;
-                    }));
+        var act = () => Guard.Argument(arg).NotInfinity();
 
-                ThrowsArgumentOutOfRangeException(
-                    nullableValueArg,
-                    arg => arg.NotEqual(equal, delta),
-                    m => nullableValueArg.Secure != m.Contains(equal.ToString()),
-                    (arg, message) => arg.NotEqual(equal, delta, (v, o) =>
-                    {
-                        Assert.Equal(value, v);
-                        Assert.Equal(equal, o);
-                        return message;
-                    }));
-            }
+        act.ShouldNotThrow();
+    }
 
-            void NonNullableTest(Guard.ArgumentInfo<float> valueArg)
-            {
-                valueArg.Equal(equal, delta).NotEqual(nonEqual, delta);
-                ThrowsArgumentOutOfRangeException(
-                    valueArg,
-                    arg => arg.Equal(nonEqual, delta),
-                    m => valueArg.Secure != m.Contains(nonEqual.ToString()),
-                    (arg, message) => arg.Equal(nonEqual, delta, (v, o) =>
-                    {
-                        Assert.Equal(value, v);
-                        Assert.Equal(nonEqual, o);
-                        return message;
-                    }));
+    [Test]
+    public void NotInfinity_Fail()
+    {
+        var arg = float.PositiveInfinity;
 
-                ThrowsArgumentOutOfRangeException(
-                    valueArg,
-                    arg => arg.NotEqual(equal, delta),
-                    m => valueArg.Secure != m.Contains(equal.ToString()),
-                    (arg, message) => arg.NotEqual(equal, delta, (v, o) =>
-                    {
-                        Assert.Equal(value, v);
-                        Assert.Equal(equal, o);
-                        return message;
-                    }));
-            }
-        }
+        Action act = () => Guard.Argument(arg).NotInfinity();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void PositiveInfinity_Pass()
+    {
+        var arg = float.PositiveInfinity;
+
+        var act = () => Guard.Argument(arg).PositiveInfinity();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void PositiveInfinity_Fail()
+    {
+        var arg = float.NegativeInfinity;
+
+        Action act = () => Guard.Argument(arg).PositiveInfinity();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotPositiveInfinity_Pass()
+    {
+        var arg = 3f;
+
+        var act = () => Guard.Argument(arg).NotPositiveInfinity();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotPositiveInfinity_Fail()
+    {
+        var arg = float.PositiveInfinity;
+
+        Action act = () => Guard.Argument(arg).NotPositiveInfinity();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NegativeInfinity_Pass()
+    {
+        var arg = float.NegativeInfinity;
+
+        var act = () => Guard.Argument(arg).NegativeInfinity();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NegativeInfinity_Fail()
+    {
+        var arg = float.PositiveInfinity;
+
+        Action act = () => Guard.Argument(arg).NegativeInfinity();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotNegativeInfinity_Pass()
+    {
+        var arg = 4f;
+
+        var act = () => Guard.Argument(arg).NotNegativeInfinity();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotNegativeInfinity_Fail()
+    {
+        var arg = float.NegativeInfinity;
+
+        Action act = () => Guard.Argument(arg).NotNegativeInfinity();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void Zero_Pass()
+    {
+        var arg = 0f;
+
+        var act = () => Guard.Argument(arg).Zero();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Zero_Fail()
+    {
+        var arg = 1f;
+
+        Action act = () => Guard.Argument(arg).Zero();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotZero_Pass()
+    {
+        var arg = 1f;
+
+        var act = () => Guard.Argument(arg).NotZero();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotZero_Fail()
+    {
+        var arg = 0f;
+
+        Action act = () => Guard.Argument(arg).NotZero();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void Positive_Pass()
+    {
+        var arg = 1.5f;
+
+        var act = () => Guard.Argument(arg).Positive();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Positive_Fail()
+    {
+        var arg = 0f;
+
+        Action act = () => Guard.Argument(arg).Positive();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotPositive_Pass()
+    {
+        var arg = 0f;
+
+        var act = () => Guard.Argument(arg).NotPositive();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotPositive_Fail()
+    {
+        var arg = 0.1f;
+
+        Action act = () => Guard.Argument(arg).NotPositive();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void Negative_Pass()
+    {
+        var arg = -0.5f;
+
+        var act = () => Guard.Argument(arg).Negative();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Negative_Fail()
+    {
+        var arg = 0f;
+
+        Action act = () => Guard.Argument(arg).Negative();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotNegative_Pass()
+    {
+        var arg = 0f;
+
+        var act = () => Guard.Argument(arg).NotNegative();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotNegative_Fail()
+    {
+        var arg = -1f;
+
+        Action act = () => Guard.Argument(arg).NotNegative();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
     }
 }
+
+
+
+
+

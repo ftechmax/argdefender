@@ -1,128 +1,173 @@
-﻿using System;
-using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class EnumTests
 {
-    public sealed class EnumTests : BaseTests
+    private enum Sample
     {
-        [Theory(DisplayName = "Enum: Defined")]
-        [InlineData(null, null)]
-        [InlineData(Colors.Red, Colors.All + 1)]
-        public void Defined(Colors? defined, Colors? undefined)
-        {
-            var nullableDefinedArg = Guard.Argument(() => defined).Defined();
-            var nullableUndefinedArg = Guard.Argument(() => undefined);
-            if (!defined.HasValue)
-            {
-                nullableUndefinedArg.Defined();
-                return;
-            }
+        None = 0,
+        One = 1,
+        Two = 2,
+    }
 
-            ThrowsArgumentException(
-                nullableUndefinedArg,
-                arg => arg.Defined(),
-                (arg, message) => arg.Defined(c =>
-                {
-                    Assert.Equal(undefined, c);
-                    return message;
-                }));
+    [Flags]
+    private enum SampleFlags
+    {
+        None = 0,
+        One = 1,
+        Two = 2,
+        Three = One | Two,
+    }
 
-            var definedArg = Guard.Argument(defined.Value, nameof(defined)).Defined();
-            var undefinedArg = Guard.Argument(undefined.Value, nameof(undefined));
-            ThrowsArgumentException(
-                undefinedArg,
-                arg => arg.Defined(),
-                (arg, message) => arg.Defined(c =>
-                {
-                    Assert.Equal(undefined, c);
-                    return message;
-                }));
-        }
+    [Test]
+    public void Enum_Pass()
+    {
+        var arg = Sample.One;
 
-        [Theory(DisplayName = "Enum: HasFlag/DoesNotHaveFlag")]
-        [InlineData(null, Colors.All, Colors.All, false)]
-        [InlineData(Colors.Red, Colors.None, Colors.Green, false)]
-        [InlineData(Colors.Red, Colors.None, Colors.Green, true)]
-        [InlineData(Colors.Red | Colors.Green, Colors.Red | Colors.Green, Colors.Blue, false)]
-        [InlineData(Colors.Red | Colors.Green, Colors.Red | Colors.Green, Colors.Blue, true)]
-        [InlineData(Colors.Red | Colors.Blue, Colors.Blue, Colors.Green, false)]
-        [InlineData(Colors.Red | Colors.Blue, Colors.Blue, Colors.Green, true)]
-        public void HasFlag(Colors? value, Colors setFlags, Colors unsetFlags, bool secure)
-        {
-            var nullableValueArg = Guard.Argument(() => value, secure)
-                .HasFlag(setFlags)
-                .DoesNotHaveFlag(unsetFlags);
+        var act = () => Guard.Argument(arg).Enum();
 
-            if (!value.HasValue)
-            {
-                nullableValueArg
-                    .HasFlag(unsetFlags)
-                    .DoesNotHaveFlag(setFlags);
+        act.ShouldNotThrow();
+    }
 
-                return;
-            }
+    [Test]
+    public void Enum_Fail()
+    {
+        var arg = (Sample)99;
 
-            ThrowsArgumentException(
-                nullableValueArg,
-                arg => arg.HasFlag(unsetFlags),
-                m => secure != m.Contains(unsetFlags.ToString()),
-                (arg, message) => arg.HasFlag(unsetFlags, (v, f) =>
-                {
-                    Assert.Equal(value, v);
-                    Assert.Equal(unsetFlags, f);
-                    return message;
-                }));
+        Action act = () => Guard.Argument(arg).Enum();
 
-            ThrowsArgumentException(
-                nullableValueArg,
-                arg => arg.DoesNotHaveFlag(setFlags),
-                m => secure != m.Contains(setFlags.ToString()),
-                (arg, message) => arg.DoesNotHaveFlag(setFlags, (v, f) =>
-                {
-                    Assert.Equal(value, v);
-                    Assert.Equal(setFlags, f);
-                    return message;
-                }));
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            var valueArg = Guard.Argument(value.Value, nameof(value), secure)
-                .HasFlag(setFlags)
-                .DoesNotHaveFlag(unsetFlags);
+    [Test]
+    public void Enum_Nullable_Null_Pass()
+    {
+        Sample? arg = null;
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.HasFlag(unsetFlags),
-                m => secure != m.Contains(unsetFlags.ToString()),
-                (arg, message) => arg.HasFlag(unsetFlags, (v, f) =>
-                {
-                    Assert.Equal(value, v);
-                    Assert.Equal(unsetFlags, f);
-                    return message;
-                }));
+        var act = () => Guard.Argument(arg).Enum();
 
-            ThrowsArgumentException(
-                valueArg,
-                arg => arg.DoesNotHaveFlag(setFlags),
-                m => secure != m.Contains(setFlags.ToString()),
-                (arg, message) => arg.DoesNotHaveFlag(setFlags, (v, f) =>
-                {
-                    Assert.Equal(value, v);
-                    Assert.Equal(setFlags, f);
-                    return message;
-                }));
-        }
+        act.ShouldNotThrow();
+    }
 
-        [Flags]
-        public enum Colors
-        {
-            None = 0,
+    [Test]
+    public void EnumDefined_Pass()
+    {
+        var arg = Sample.Two;
 
-            Red = 1,
+        var act = () => Guard.Argument(arg).EnumDefined();
 
-            Green = 2,
+        act.ShouldNotThrow();
+    }
 
-            Blue = 4,
+    [Test]
+    public void EnumDefined_Fail()
+    {
+        var arg = (Sample)5;
 
-            All = Red | Green | Blue
-        }
+        Action act = () => Guard.Argument(arg).EnumDefined();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void EnumNone_Pass()
+    {
+        var arg = Sample.None;
+
+        var act = () => Guard.Argument(arg).EnumNone();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumNone_Fail()
+    {
+        var arg = Sample.One;
+
+        Action act = () => Guard.Argument(arg).EnumNone();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void EnumNotNone_Pass()
+    {
+        var arg = Sample.One;
+
+        var act = () => Guard.Argument(arg).EnumNotNone();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumNotNone_Fail()
+    {
+        var arg = Sample.None;
+
+        Action act = () => Guard.Argument(arg).EnumNotNone();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void EnumHasFlag_Pass()
+    {
+        var arg = SampleFlags.Three;
+
+        var act = () => Guard.Argument(arg).EnumHasFlag(SampleFlags.One);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumHasFlag_Fail()
+    {
+        var arg = SampleFlags.One;
+
+        Action act = () => Guard.Argument(arg).EnumHasFlag(SampleFlags.Two);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void EnumDoesNotHaveFlag_Pass()
+    {
+        var arg = SampleFlags.One;
+
+        var act = () => Guard.Argument(arg).EnumDoesNotHaveFlag(SampleFlags.Two);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumDoesNotHaveFlag_Fail()
+    {
+        var arg = SampleFlags.Three;
+
+        Action act = () => Guard.Argument(arg).EnumDoesNotHaveFlag(SampleFlags.One);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void EnumNullable_Flag_Pass_WhenNull()
+    {
+        SampleFlags? arg = null;
+
+        var act = () => Guard.Argument(arg).EnumHasFlag(SampleFlags.One);
+
+        act.ShouldNotThrow();
     }
 }
+
+
+
+
+

@@ -1,65 +1,219 @@
-﻿using System;
-using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class DateTimeTests
 {
-    public sealed class DateTimeTests : BaseTests
+    [Test]
+    public void KindSpecified_DateTime_Pass()
     {
-        [Theory(DisplayName = "DateTime: KindSpecified/KindUnspecified")]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void KindSpecified(bool testNull)
-        {
-            var specified = testNull ? default(DateTime?) : DateTime.UtcNow;
-            var nullableSpecifiedArg = Guard.Argument(() => specified).KindSpecified();
+        var arg = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-            var unspecified = testNull ? default(DateTime?) : default(DateTime);
-            var nullableUnspecifiedArg = Guard.Argument(() => unspecified).KindUnspecified();
+        var act = () => Guard.Argument(arg).KindSpecified();
 
-            if (testNull)
-            {
-                nullableSpecifiedArg.KindUnspecified();
-                nullableUnspecifiedArg.KindSpecified();
-                return;
-            }
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentException(
-                nullableSpecifiedArg,
-                arg => arg.KindUnspecified(),
-                (arg, message) => arg.KindUnspecified(d =>
-                {
-                    Assert.Equal(specified, d);
-                    return message;
-                }));
+    [Test]
+    public void KindSpecified_DateTime_Fail()
+    {
+        var arg = new DateTime(2024, 1, 1);
 
-            ThrowsArgumentException(
-                nullableUnspecifiedArg,
-                arg => arg.KindSpecified(),
-                (arg, message) => arg.KindSpecified(d =>
-                {
-                    Assert.Equal(unspecified, d);
-                    return message;
-                }));
+        Action act = () => Guard.Argument(arg).KindSpecified();
 
-            var specifiedArg = Guard.Argument(specified.Value, nameof(specified)).KindSpecified();
-            var unspecifiedArg = Guard.Argument(unspecified.Value, nameof(unspecified)).KindUnspecified();
-            ThrowsArgumentException(
-                specifiedArg,
-                arg => arg.KindUnspecified(),
-                (arg, message) => arg.KindUnspecified(d =>
-                {
-                    Assert.Equal(specified, d);
-                    return message;
-                }));
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            ThrowsArgumentException(
-                unspecifiedArg,
-                arg => arg.KindSpecified(),
-                (arg, message) => arg.KindSpecified(d =>
-                {
-                    Assert.Equal(unspecified, d);
-                    return message;
-                }));
-        }
+    [Test]
+    public void KindSpecified_Nullable_DateTime_Pass_Null()
+    {
+        DateTime? arg = null;
+
+        var act = () => Guard.Argument(arg).KindSpecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindSpecified_Nullable_DateTime_Pass_Value()
+    {
+        DateTime? arg = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Local);
+
+        var act = () => Guard.Argument(arg).KindSpecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindSpecified_Nullable_DateTime_Fail()
+    {
+        DateTime? arg = new DateTime(2024, 1, 1);
+
+        Action act = () => Guard.Argument(arg).KindSpecified();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void KindUnspecified_DateTime_Pass()
+    {
+        var arg = new DateTime(2024, 1, 1);
+
+        var act = () => Guard.Argument(arg).KindUnspecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindUnspecified_DateTime_Fail()
+    {
+        var arg = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        Action act = () => Guard.Argument(arg).KindUnspecified();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void KindUnspecified_Nullable_DateTime_Pass_Null()
+    {
+        DateTime? arg = null;
+
+        var act = () => Guard.Argument(arg).KindUnspecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindUnspecified_Nullable_DateTime_Pass_Value()
+    {
+        DateTime? arg = new DateTime(2024, 1, 1);
+
+        var act = () => Guard.Argument(arg).KindUnspecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindUnspecified_Nullable_DateTime_Fail()
+    {
+        DateTime? arg = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Local);
+
+        Action act = () => Guard.Argument(arg).KindUnspecified();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void KindSpecified_DateTimeOffset_Pass()
+    {
+        var arg = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.FromHours(2));
+
+        var act = () => Guard.Argument(arg).KindSpecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindSpecified_DateTimeOffset_Fail()
+    {
+        var arg = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+        Action act = () => Guard.Argument(arg).KindSpecified();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void KindSpecified_Nullable_DateTimeOffset_Pass_Null()
+    {
+        DateTimeOffset? arg = null;
+
+        var act = () => Guard.Argument(arg).KindSpecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindSpecified_Nullable_DateTimeOffset_Pass_Value()
+    {
+        DateTimeOffset? arg = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.FromHours(1));
+
+        var act = () => Guard.Argument(arg).KindSpecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindSpecified_Nullable_DateTimeOffset_Fail()
+    {
+        DateTimeOffset? arg = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+        Action act = () => Guard.Argument(arg).KindSpecified();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void KindUnspecified_DateTimeOffset_Pass()
+    {
+        var arg = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+        var act = () => Guard.Argument(arg).KindUnspecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindUnspecified_DateTimeOffset_Fail()
+    {
+        var arg = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.FromHours(-3));
+
+        Action act = () => Guard.Argument(arg).KindUnspecified();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void KindUnspecified_Nullable_DateTimeOffset_Pass_Null()
+    {
+        DateTimeOffset? arg = null;
+
+        var act = () => Guard.Argument(arg).KindUnspecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindUnspecified_Nullable_DateTimeOffset_Pass_Value()
+    {
+        DateTimeOffset? arg = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+        var act = () => Guard.Argument(arg).KindUnspecified();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void KindUnspecified_Nullable_DateTimeOffset_Fail()
+    {
+        DateTimeOffset? arg = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.FromHours(2));
+
+        Action act = () => Guard.Argument(arg).KindUnspecified();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
     }
 }
+
+
+
+
+

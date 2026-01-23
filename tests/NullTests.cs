@@ -1,115 +1,146 @@
-﻿using System;
-using Xunit;
+using Shouldly;
 
-namespace ArgDefender.Tests
+namespace ArgDefender.Test;
+
+public class NullTests
 {
-    public sealed class NullTests : BaseTests
+    [Test]
+    public void Null_Pass_Reference()
     {
-        [Fact(DisplayName = "Nullable class: Null/NotNull")]
-        public void NullReference()
-        {
-            var @null = null as string;
-            var nullArg = Guard.Argument(@null).Null();
+        string? arg = null;
 
-            var nonNull = "A";
-            var nonNullArg = Guard.Argument(nonNull).NotNull();
+        var act = () => Guard.Argument(arg).Null();
 
-            ThrowsArgumentException(
-                nonNullArg,
-                arg => arg.Null(),
-                (arg, message) => arg.Null(s =>
-                {
-                    Assert.Same(nonNull, s);
-                    return message;
-                }));
+        act.ShouldNotThrow();
+    }
 
-            ThrowsArgumentNullException(
-                nullArg,
-                arg => arg.NotNull(),
-                (arg, message) => arg.NotNull(message));
-        }
+    [Test]
+    public void Null_Fail_Reference()
+    {
+        var arg = "value";
 
-        [Fact(DisplayName = "Nullable struct: Null/NotNull")]
-        public void NullValue()
-        {
-            var @null = null as int?;
-            var nullArg = Guard.Argument(() => @null).Null();
-            Assert.False(nullArg.HasValue);
+        Action act = () => Guard.Argument(arg).Null();
 
-            ThrowsArgumentNullException(
-                nullArg,
-                arg => arg.NotNull(),
-                (arg, message) => arg.NotNull(message));
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-            var one = 1 as int?;
-            for (var i = 0; i < 2; i++)
-            {
-                var nullableOneArg = Guard.Argument(() => one, i == 1);
-                Assert.IsType<Guard.ArgumentInfo<int?>>(nullableOneArg);
-                Assert.True(nullableOneArg.HasValue);
+    [Test]
+    public void Null_Pass_NullableStruct()
+    {
+        int? arg = null;
 
-                ThrowsArgumentException(
-                    nullableOneArg,
-                    arg => arg.Null(),
-                    (arg, message) => arg.Null(v =>
-                    {
-                        Assert.Equal(one, v);
-                        return message;
-                    }));
+        var act = () => Guard.Argument(arg).Null();
 
-                var oneArg = nullableOneArg.NotNull();
-                Assert.IsType<Guard.ArgumentInfo<int>>(oneArg);
-                Assert.True(oneArg.HasValue);
-                Assert.Equal(nullableOneArg.Value, oneArg.Value);
-                Assert.Equal(nullableOneArg.Secure, oneArg.Secure);
-            }
-        }
+        act.ShouldNotThrow();
+    }
 
-        [Theory(DisplayName = "Null: NotAllNull`2")]
-        [InlineData(1, "A", true)]
-        [InlineData(null, "A", true)]
-        [InlineData(1, null, true)]
-        [InlineData(null, null, false)]
-        public void NotAllNull2<T1, T2>(T1 val1, T2 val2, bool valid)
-        {
-            if (!valid)
-            {
-                var paramName = $"{nameof(val1)}, {nameof(val2)}";
-                Assert.Throws<ArgumentNullException>(paramName, () => Test());
-                return;
-            }
+    [Test]
+    public void Null_Fail_NullableStruct()
+    {
+        int? arg = 1;
 
-            Test();
+        Action act = () => Guard.Argument(arg).Null();
 
-            void Test() => Guard.NotAllNull(
-                Guard.Argument(() => val1),
-                Guard.Argument(() => val2));
-        }
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
 
-        [Theory(DisplayName = "Null: NotAllNull`3")]
-        [InlineData(1, "A", 1.0, true)]
-        [InlineData(null, "A", 1.0, true)]
-        [InlineData(1, null, 1.0, true)]
-        [InlineData(1, "A", null, true)]
-        [InlineData(null, null, 1.0, true)]
-        [InlineData(1, null, null, true)]
-        [InlineData(null, "A", null, true)]
-        [InlineData(null, null, null, false)]
-        public void NotAllNull3<T1, T2, T3>(T1 val1, T2 val2, T3 val3, bool valid)
-        {
-            if (!valid)
-            {
-                var paramName = $"{nameof(val1)}, {nameof(val2)}, {nameof(val3)}";
-                Assert.Throws<ArgumentNullException>(paramName, () => Test());
-                return;
-            }
+    [Test]
+    public void NotNull_Pass_Reference()
+    {
+        var arg = "value";
 
-            Test();
+        var act = () => Guard.Argument(arg).NotNull();
 
-            void Test() => Guard.NotAllNull(
-                Guard.Argument(() => val1),
-                Guard.Argument(() => val2),
-                Guard.Argument(() => val3));
-        }
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotNull_Fail_Reference()
+    {
+        string? arg = null;
+
+        Action act = () => Guard.Argument(arg).NotNull();
+
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotNull_Pass_NullableStruct()
+    {
+        int? arg = 1;
+
+        var act = () => Guard.Argument(arg).NotNull();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotNull_Fail_NullableStruct()
+    {
+        int? arg = null;
+
+        Action act = () => Guard.Argument(arg).NotNull();
+
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotAllNull_Two_Pass_When_First_NotNull()
+    {
+        string? arg1 = "a";
+        string? arg2 = null;
+
+        var act = () => Guard.NotAllNull(Guard.Argument(arg1), Guard.Argument(arg2));
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotAllNull_Two_Fail_When_BothNull()
+    {
+        string? arg1 = null;
+        string? arg2 = null;
+
+        Action act = () => Guard.NotAllNull(Guard.Argument(arg1), Guard.Argument(arg2));
+
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldContain(nameof(arg1));
+        exception.Message.ShouldContain(nameof(arg2));
+    }
+
+    [Test]
+    public void NotAllNull_Three_Pass_When_OneNotNull()
+    {
+        string? arg1 = null;
+        string? arg2 = "b";
+        string? arg3 = null;
+
+        var act = () => Guard.NotAllNull(Guard.Argument(arg1), Guard.Argument(arg2), Guard.Argument(arg3));
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotAllNull_Three_Fail_When_AllNull()
+    {
+        string? arg1 = null;
+        string? arg2 = null;
+        string? arg3 = null;
+
+        Action act = () => Guard.NotAllNull(Guard.Argument(arg1), Guard.Argument(arg2), Guard.Argument(arg3));
+
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.Message.ShouldContain(nameof(arg1));
+        exception.Message.ShouldContain(nameof(arg2));
+        exception.Message.ShouldContain(nameof(arg3));
     }
 }
+
+
+
+
+
