@@ -113,6 +113,60 @@ public static partial class Guard
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<float> Finite(
+        in this ArgumentInfo<float> argument, Func<float, string>? message = null)
+    {
+        if (!float.IsNaN(argument.Value) && !float.IsInfinity(argument.Value))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value) ?? Messages.Finite(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<float?> Finite(
+        in this ArgumentInfo<float?> argument, Func<float?, string>? message = null)
+    {
+        var value = argument.Value;
+        if (value == null || (!float.IsNaN(value.Value) && !float.IsInfinity(value.Value)))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(value) ?? Messages.Finite(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<float> NotFinite(
+        in this ArgumentInfo<float> argument, Func<float, string>? message = null)
+    {
+        if (float.IsNaN(argument.Value) || float.IsInfinity(argument.Value))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value) ?? Messages.NotFinite(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<float?> NotFinite(
+        in this ArgumentInfo<float?> argument, Func<float?, string>? message = null)
+    {
+        var value = argument.Value;
+        if (value == null || float.IsNaN(value.Value) || float.IsInfinity(value.Value))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(value) ?? Messages.NotFinite(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<float> PositiveInfinity(
         in this ArgumentInfo<float> argument, Func<float, string>? message = null)
     {

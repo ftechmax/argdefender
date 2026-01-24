@@ -81,4 +81,63 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value) ?? Messages.UriHttps(argument);
         throw new ArgumentException(m, argument.Name);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<Uri> UriHttpOrHttps(
+        in this ArgumentInfo<Uri> argument, Func<Uri, string>? message = null)
+    {
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        if (value.IsAbsoluteUri
+            && (string.Equals(value.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(value.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(value) ?? Messages.UriHttpOrHttps(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<Uri> UriHasHost(
+        in this ArgumentInfo<Uri> argument, Func<Uri, string>? message = null)
+    {
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        if (value.IsAbsoluteUri && !string.IsNullOrWhiteSpace(value.Host))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(value) ?? Messages.UriHasHost(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<Uri> UriPortInRange(
+        in this ArgumentInfo<Uri> argument, int minPort, int maxPort, Func<Uri, int, int, string>? message = null)
+    {
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        if (value.IsAbsoluteUri && value.Port >= minPort && value.Port <= maxPort)
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(value, minPort, maxPort) ?? Messages.UriPortInRange(argument, minPort, maxPort);
+        throw new ArgumentException(m, argument.Name);
+    }
 }

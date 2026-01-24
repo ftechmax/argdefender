@@ -177,6 +177,48 @@ public class EqualityTests
     }
 
     [Test]
+    public void Equal_Delta_Float_Pass_NonNullable()
+    {
+        var arg = 1.05f;
+
+        var act = () => Guard.Argument(arg).Equal(1.0f, 0.1f);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Equal_Delta_Float_Fail_NonNullable()
+    {
+        var arg = 1.2f;
+
+        Action act = () => Guard.Argument(arg).Equal(1.0f, 0.1f);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void NotEqual_Delta_Float_Pass_NonNullable()
+    {
+        var arg = 1.2f;
+
+        var act = () => Guard.Argument(arg).NotEqual(1.0f, 0.1f);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotEqual_Delta_Float_Fail_NonNullable()
+    {
+        var arg = 1.05f;
+
+        Action act = () => Guard.Argument(arg).NotEqual(1.0f, 0.1f);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
     public void Same_Pass()
     {
         var instance = new RefHolder(1);
@@ -218,6 +260,156 @@ public class EqualityTests
 
         var exception = act.ShouldThrow<ArgumentException>();
         exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void Default_Nullable_Fail_Value()
+    {
+        int? arg = 5;
+
+        Action act = () => Guard.Argument(arg).Default();
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void NotDefault_Nullable_Pass_Value()
+    {
+        int? arg = 2;
+
+        var act = () => Guard.Argument(arg).NotDefault();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotDefault_Nullable_Fail_Default()
+    {
+        int? arg = 0;
+
+        Action act = () => Guard.Argument(arg).NotDefault();
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void Equal_Nullable_Pass_Value()
+    {
+        int? arg = 5;
+
+        var act = () => Guard.Argument(arg).Equal(5);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Equal_Nullable_Fail_Value()
+    {
+        int? arg = 4;
+
+        Action act = () => Guard.Argument(arg).Equal(5);
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void NotEqual_Nullable_Pass_Value()
+    {
+        int? arg = 4;
+
+        var act = () => Guard.Argument(arg).NotEqual(5);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotEqual_Nullable_Fail_Value()
+    {
+        int? arg = 5;
+
+        Action act = () => Guard.Argument(arg).NotEqual(5);
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void Equal_Delta_Double_Nullable_Pass()
+    {
+        double? arg = 1.05d;
+
+        var act = () => Guard.Argument(arg).Equal(1.0d, 0.1d);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Equal_Delta_Double_Nullable_Fail()
+    {
+        double? arg = 1.2d;
+
+        Action act = () => Guard.Argument(arg).Equal(1.0d, 0.1d);
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void NotEqual_Delta_Double_Nullable_Pass()
+    {
+        double? arg = 1.2d;
+
+        var act = () => Guard.Argument(arg).NotEqual(1.0d, 0.1d);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotEqual_Delta_Double_Nullable_Fail()
+    {
+        double? arg = 1.05d;
+
+        Action act = () => Guard.Argument(arg).NotEqual(1.0d, 0.1d);
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void Equal_Delta_Float_Nullable_Pass()
+    {
+        float? arg = 1.05f;
+
+        var act = () => Guard.Argument(arg).Equal(1.0f, 0.1f);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Equal_Delta_Float_Nullable_Fail()
+    {
+        float? arg = 1.2f;
+
+        Action act = () => Guard.Argument(arg).Equal(1.0f, 0.1f);
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void NotEqual_Delta_Float_Nullable_Pass()
+    {
+        float? arg = 1.2f;
+
+        var act = () => Guard.Argument(arg).NotEqual(1.0f, 0.1f);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotEqual_Delta_Float_Nullable_Fail()
+    {
+        float? arg = 1.05f;
+
+        Action act = () => Guard.Argument(arg).NotEqual(1.0f, 0.1f);
+
+        act.ShouldThrow<ArgumentException>();
     }
 }
 

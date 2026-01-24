@@ -130,6 +130,12 @@ internal static class Messages
     public static string NotNegativeInfinity<T>(in ArgumentInfo<T> argument)
         => $"{argument.Name} cannot be negative infinity (-∞).";
 
+    public static string Finite<T>(in ArgumentInfo<T> argument)
+        => $"{argument.Name} must be a finite number.";
+
+    public static string NotFinite<T>(in ArgumentInfo<T> argument)
+        => $"{argument.Name} must be NaN or infinity.";
+
     public static string StringEmpty(in ArgumentInfo<string> argument)
         => $"{argument.Name} must be empty.";
 
@@ -168,6 +174,12 @@ internal static class Messages
 
     public static string StringDoesNotEndWith(in ArgumentInfo<string> argument, string value)
         => argument.Secure ? Require(argument) : $"{argument.Name} cannot end with '{value}'.";
+
+    public static string StringContains(in ArgumentInfo<string> argument, string value)
+        => argument.Secure ? Require(argument) : $"{argument.Name} must contain '{value}'.";
+
+    public static string StringDoesNotContain(in ArgumentInfo<string> argument, string value)
+        => argument.Secure ? Require(argument) : $"{argument.Name} cannot contain '{value}'.";
 
     public static string StringMatches(in ArgumentInfo<string> argument, string pattern)
         => argument.Secure ? Require(argument) : $"No match in {argument.Name} could be found by the regular expression '{pattern}'.";
@@ -232,6 +244,21 @@ internal static class Messages
     public static string CollectionDoesNotContain<TCollection, TItem>(ArgumentInfo<TCollection> argument, TItem item)
         => argument.Secure ? Require(argument) : $"{argument.Name} cannot contain {ToString(item)}.";
 
+    public static string CollectionAny<T>(in ArgumentInfo<T> argument)
+        => $"{argument.Name} must contain at least one matching item.";
+
+    public static string CollectionAll<T>(in ArgumentInfo<T> argument)
+        => $"{argument.Name} must contain only matching items.";
+
+    public static string CollectionNone<T>(in ArgumentInfo<T> argument)
+        => $"{argument.Name} must not contain any matching items.";
+
+    public static string CollectionAllNotNull<T>(in ArgumentInfo<T> argument)
+        => $"{argument.Name} cannot contain null items.";
+
+    public static string CollectionNoDuplicates<T>(in ArgumentInfo<T> argument)
+        => $"{argument.Name} cannot contain duplicate items.";
+
     public static string InCollection<T>(ArgumentInfo<T> argument, IEnumerable collection)
         => argument.Secure ? Require(argument) : $"{argument.Name} must be one of the following: {Join(collection)}";
 
@@ -255,6 +282,15 @@ internal static class Messages
 
     public static string UriHttps(in ArgumentInfo<Uri> argument)
         => $"{argument.Name} must be an absolute URI with the HTTPS scheme.";
+
+    public static string UriHttpOrHttps(in ArgumentInfo<Uri> argument)
+        => $"{argument.Name} must be an absolute URI with the HTTP or HTTPS scheme.";
+
+    public static string UriHasHost(in ArgumentInfo<Uri> argument)
+        => $"{argument.Name} must be an absolute URI with a host.";
+
+    public static string UriPortInRange(in ArgumentInfo<Uri> argument, int minPort, int maxPort)
+        => $"{argument.Name} must have a port between {minPort} and {maxPort}.";
 
     public static string EmailHasHost(in ArgumentInfo<MailAddress> argument, string host)
         => argument.Secure ? Require(argument) : $"{argument.Name} must have the host '{host}'.";

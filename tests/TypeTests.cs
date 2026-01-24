@@ -145,6 +145,28 @@ public class TypeTests
     }
 
     [Test]
+    public void Type_Throws_When_Type_Null()
+    {
+        var arg = new object();
+
+        Action act = () => Guard.Argument(arg).Type(type: null!);
+
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.ParamName.ShouldBe("type");
+    }
+
+    [Test]
+    public void NotType_Throws_When_Type_Null()
+    {
+        var arg = new object();
+
+        Action act = () => Guard.Argument(arg).NotType(type: null!);
+
+        var exception = act.ShouldThrow<ArgumentNullException>();
+        exception.ParamName.ShouldBe("type");
+    }
+
+    [Test]
     public void NotCompatible_Pass()
     {
         var arg = "hello";

@@ -172,6 +172,38 @@ public static partial class Guard
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<TCollection> Contains<TCollection>(
+        in this ArgumentInfo<TCollection> argument, object? item, Func<TCollection, object?, string>? message = null)
+        where TCollection : IEnumerable
+    {
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        var comparer = EqualityComparer<object?>.Default;
+        var enumerator = value.GetEnumerator();
+        try
+        {
+            while (enumerator.MoveNext())
+            {
+                if (comparer.Equals(enumerator.Current, item))
+                {
+                    return ref argument;
+                }
+            }
+        }
+        finally
+        {
+            (enumerator as IDisposable)?.Dispose();
+        }
+
+        var m = message?.Invoke(value, item) ?? Messages.CollectionContains(argument, item);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<TCollection> DoesNotContain<TCollection, TItem>(
         in this ArgumentInfo<TCollection> argument, TItem item, Func<TCollection, TItem, string>? message = null)
         where TCollection : IEnumerable<TItem>
@@ -189,6 +221,206 @@ public static partial class Guard
             if (comparer.Equals(enumerator.Current, item))
             {
                 var m = message?.Invoke(value, item) ?? Messages.CollectionDoesNotContain(argument, item);
+                throw new ArgumentException(m, argument.Name);
+            }
+        }
+
+        return ref argument;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<TCollection> DoesNotContain<TCollection>(
+        in this ArgumentInfo<TCollection> argument, object? item, Func<TCollection, object?, string>? message = null)
+        where TCollection : IEnumerable
+    {
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        var comparer = EqualityComparer<object?>.Default;
+        var enumerator = value.GetEnumerator();
+        try
+        {
+            while (enumerator.MoveNext())
+            {
+                if (comparer.Equals(enumerator.Current, item))
+                {
+                    var m = message?.Invoke(value, item) ?? Messages.CollectionDoesNotContain(argument, item);
+                    throw new ArgumentException(m, argument.Name);
+                }
+            }
+        }
+        finally
+        {
+            (enumerator as IDisposable)?.Dispose();
+        }
+
+        return ref argument;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<TCollection> Any<TCollection, TItem>(
+        in this ArgumentInfo<TCollection> argument,
+        Func<TItem, bool> predicate,
+        Func<TCollection, string>? message = null)
+        where TCollection : IEnumerable<TItem>
+    {
+        if (predicate == null)
+        {
+            throw new ArgumentNullException(nameof(predicate));
+        }
+
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        foreach (var item in value)
+        {
+            if (predicate(item))
+            {
+                return ref argument;
+            }
+        }
+
+        var m = message?.Invoke(value) ?? Messages.CollectionAny(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<TCollection> All<TCollection, TItem>(
+        in this ArgumentInfo<TCollection> argument,
+        Func<TItem, bool> predicate,
+        Func<TCollection, string>? message = null)
+        where TCollection : IEnumerable<TItem>
+    {
+        if (predicate == null)
+        {
+            throw new ArgumentNullException(nameof(predicate));
+        }
+
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        foreach (var item in value)
+        {
+            if (!predicate(item))
+            {
+                var m = message?.Invoke(value) ?? Messages.CollectionAll(argument);
+                throw new ArgumentException(m, argument.Name);
+            }
+        }
+
+        return ref argument;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<TCollection> None<TCollection, TItem>(
+        in this ArgumentInfo<TCollection> argument,
+        Func<TItem, bool> predicate,
+        Func<TCollection, string>? message = null)
+        where TCollection : IEnumerable<TItem>
+    {
+        if (predicate == null)
+        {
+            throw new ArgumentNullException(nameof(predicate));
+        }
+
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        foreach (var item in value)
+        {
+            if (predicate(item))
+            {
+                var m = message?.Invoke(value) ?? Messages.CollectionNone(argument);
+                throw new ArgumentException(m, argument.Name);
+            }
+        }
+
+        return ref argument;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<TCollection> AllNotNull<TCollection>(
+        in this ArgumentInfo<TCollection> argument, Func<TCollection, string>? message = null)
+        where TCollection : IEnumerable
+    {
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        foreach (var item in value)
+        {
+            if (item is null)
+            {
+                var m = message?.Invoke(value) ?? Messages.CollectionAllNotNull(argument);
+                throw new ArgumentException(m, argument.Name);
+            }
+        }
+
+        return ref argument;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<TCollection> NoDuplicates<TCollection>(
+        in this ArgumentInfo<TCollection> argument, Func<TCollection, string>? message = null)
+        where TCollection : IEnumerable
+    {
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        var set = new HashSet<object?>();
+        foreach (var item in value)
+        {
+            if (!set.Add(item))
+            {
+                var m = message?.Invoke(value) ?? Messages.CollectionNoDuplicates(argument);
+                throw new ArgumentException(m, argument.Name);
+            }
+        }
+
+        return ref argument;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<TCollection> NoDuplicates<TCollection, TItem>(
+        in this ArgumentInfo<TCollection> argument,
+        IEqualityComparer<TItem> comparer,
+        Func<TCollection, string>? message = null)
+        where TCollection : IEnumerable<TItem>
+    {
+        if (comparer == null)
+        {
+            throw new ArgumentNullException(nameof(comparer));
+        }
+
+        var value = argument.Value;
+        if (value == null)
+        {
+            return ref argument;
+        }
+
+        var set = new HashSet<TItem>(comparer);
+        foreach (var item in value)
+        {
+            if (!set.Add(item))
+            {
+                var m = message?.Invoke(value) ?? Messages.CollectionNoDuplicates(argument);
                 throw new ArgumentException(m, argument.Name);
             }
         }

@@ -165,6 +165,136 @@ public class EnumTests
 
         act.ShouldNotThrow();
     }
+
+    [Test]
+    public void EnumDefined_Nullable_Pass_Value()
+    {
+        Sample? arg = Sample.Two;
+
+        var act = () => Guard.Argument(arg).EnumDefined();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumNone_Nullable_Pass_Value()
+    {
+        Sample? arg = Sample.None;
+
+        var act = () => Guard.Argument(arg).EnumNone();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumNotNone_Nullable_Pass_Value()
+    {
+        Sample? arg = Sample.One;
+
+        var act = () => Guard.Argument(arg).EnumNotNone();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumHasFlag_Nullable_Pass_Value()
+    {
+        SampleFlags? arg = SampleFlags.Three;
+
+        var act = () => Guard.Argument(arg).EnumHasFlag(SampleFlags.One);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumDoesNotHaveFlag_Nullable_Pass_Value()
+    {
+        SampleFlags? arg = SampleFlags.One;
+
+        var act = () => Guard.Argument(arg).EnumDoesNotHaveFlag(SampleFlags.Two);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumDoesNotHaveFlag_Nullable_Pass_Null()
+    {
+        SampleFlags? arg = null;
+
+        var act = () => Guard.Argument(arg).EnumDoesNotHaveFlag(SampleFlags.One);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumNullable_Pass_Value()
+    {
+        Sample? arg = Sample.One;
+
+        var act = () => Guard.Argument(arg).Enum();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EnumNullable_Fail_Value()
+    {
+        Sample? arg = (Sample)99;
+
+        Action act = () => Guard.Argument(arg).Enum();
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void EnumDefined_Nullable_Fail_Value()
+    {
+        Sample? arg = (Sample)5;
+
+        Action act = () => Guard.Argument(arg).EnumDefined();
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void EnumNone_Nullable_Fail_Value()
+    {
+        Sample? arg = Sample.One;
+
+        Action act = () => Guard.Argument(arg).EnumNone();
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void EnumNotNone_Nullable_Fail_Value()
+    {
+        Sample? arg = Sample.None;
+
+        Action act = () => Guard.Argument(arg).EnumNotNone();
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void EnumHasFlag_Nullable_Fail_Value()
+    {
+        SampleFlags? arg = SampleFlags.One;
+
+        Action act = () => Guard.Argument(arg).EnumHasFlag(SampleFlags.Two);
+
+        act.ShouldThrow<ArgumentException>();
+    }
+
+    [Test]
+    public void EnumDoesNotHaveFlag_Nullable_Fail_Value()
+    {
+        SampleFlags? arg = SampleFlags.Three;
+
+        Action act = () => Guard.Argument(arg).EnumDoesNotHaveFlag(SampleFlags.One);
+
+        act.ShouldThrow<ArgumentException>();
+    }
 }
 
 

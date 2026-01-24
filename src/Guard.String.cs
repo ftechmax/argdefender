@@ -150,6 +150,22 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<string> StartsWith(
+        in this ArgumentInfo<string> argument,
+        string value,
+        StringComparison comparisonType,
+        Func<string, string, StringComparison, string>? message = null)
+    {
+        if (argument.Value == null || argument.Value.StartsWith(value, comparisonType))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value, value, comparisonType) ?? Messages.StringStartsWith(argument, value);
+        throw new ArgumentException(m, argument.Name);
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> DoesNotStartWith(
@@ -161,6 +177,22 @@ public static partial class Guard
         }
 
         var m = message?.Invoke(argument.Value, value) ?? Messages.StringDoesNotStartWith(argument, value);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<string> DoesNotStartWith(
+        in this ArgumentInfo<string> argument,
+        string value,
+        StringComparison comparisonType,
+        Func<string, string, StringComparison, string>? message = null)
+    {
+        if (argument.Value == null || !argument.Value.StartsWith(value, comparisonType))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value, value, comparisonType) ?? Messages.StringDoesNotStartWith(argument, value);
         throw new ArgumentException(m, argument.Name);
     }
 
@@ -178,6 +210,22 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<string> EndsWith(
+        in this ArgumentInfo<string> argument,
+        string value,
+        StringComparison comparisonType,
+        Func<string, string, StringComparison, string>? message = null)
+    {
+        if (argument.Value == null || argument.Value.EndsWith(value, comparisonType))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value, value, comparisonType) ?? Messages.StringEndsWith(argument, value);
+        throw new ArgumentException(m, argument.Name);
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> DoesNotEndWith(
@@ -189,6 +237,81 @@ public static partial class Guard
         }
 
         var m = message?.Invoke(argument.Value, value) ?? Messages.StringDoesNotEndWith(argument, value);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<string> DoesNotEndWith(
+        in this ArgumentInfo<string> argument,
+        string value,
+        StringComparison comparisonType,
+        Func<string, string, StringComparison, string>? message = null)
+    {
+        if (argument.Value == null || !argument.Value.EndsWith(value, comparisonType))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value, value, comparisonType) ?? Messages.StringDoesNotEndWith(argument, value);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<string> Contains(
+        in this ArgumentInfo<string> argument, string value, Func<string, string, string>? message = null)
+    {
+        if (argument.Value == null || argument.Value.Contains(value))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value, value) ?? Messages.StringContains(argument, value);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<string> Contains(
+        in this ArgumentInfo<string> argument,
+        string value,
+        StringComparison comparisonType,
+        Func<string, string, StringComparison, string>? message = null)
+    {
+        if (argument.Value == null || argument.Value.Contains(value, comparisonType))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value, value, comparisonType) ?? Messages.StringContains(argument, value);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<string> DoesNotContain(
+        in this ArgumentInfo<string> argument, string value, Func<string, string, string>? message = null)
+    {
+        if (argument.Value == null || !argument.Value.Contains(value))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value, value) ?? Messages.StringDoesNotContain(argument, value);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<string> DoesNotContain(
+        in this ArgumentInfo<string> argument,
+        string value,
+        StringComparison comparisonType,
+        Func<string, string, StringComparison, string>? message = null)
+    {
+        if (argument.Value == null || !argument.Value.Contains(value, comparisonType))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value, value, comparisonType) ?? Messages.StringDoesNotContain(argument, value);
         throw new ArgumentException(m, argument.Name);
     }
 

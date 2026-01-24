@@ -144,6 +144,30 @@ public class EmailTests
         var exception = act.ShouldThrow<ArgumentException>();
         exception.Message.ShouldContain(nameof(arg));
     }
+
+    [Test]
+    public void EmailHostIn_Pass_WhenNull()
+    {
+        MailAddress? arg = null;
+
+        var hosts = new[] { "example.com" };
+
+        var act = () => Guard.Argument(arg).EmailHostIn(hosts);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EmailHostNotIn_Pass_WhenNull()
+    {
+        MailAddress? arg = null;
+
+        var hosts = new[] { "example.com" };
+
+        var act = () => Guard.Argument(arg).EmailHostNotIn(hosts);
+
+        act.ShouldNotThrow();
+    }
 }
 
 

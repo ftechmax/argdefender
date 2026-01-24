@@ -140,6 +140,99 @@ public class UriTests
         var exception = act.ShouldThrow<ArgumentException>();
         exception.Message.ShouldContain(nameof(arg));
     }
+
+    [Test]
+    public void UriHttpOrHttps_Pass()
+    {
+        var arg = new Uri("http://example.com");
+
+        var act = () => Guard.Argument(arg).UriHttpOrHttps();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void UriHttpOrHttps_Fail()
+    {
+        var arg = new Uri("ftp://example.com");
+
+        Action act = () => Guard.Argument(arg).UriHttpOrHttps();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void UriHasHost_Pass()
+    {
+        var arg = new Uri("https://example.com");
+
+        var act = () => Guard.Argument(arg).UriHasHost();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void UriHasHost_Fail()
+    {
+        var arg = new Uri("file:///C:/path");
+
+        Action act = () => Guard.Argument(arg).UriHasHost();
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void UriPortInRange_Pass()
+    {
+        var arg = new Uri("https://example.com:8080");
+
+        var act = () => Guard.Argument(arg).UriPortInRange(8000, 9000);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void UriPortInRange_Fail()
+    {
+        var arg = new Uri("https://example.com:8080");
+
+        Action act = () => Guard.Argument(arg).UriPortInRange(9000, 9999);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void UriHasHost_Pass_WhenNull()
+    {
+        Uri? arg = null;
+
+        var act = () => Guard.Argument(arg).UriHasHost();
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void UriPortInRange_Pass_WhenNull()
+    {
+        Uri? arg = null;
+
+        var act = () => Guard.Argument(arg).UriPortInRange(1, 65535);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void UriHttpOrHttps_Pass_WhenNull()
+    {
+        Uri? arg = null;
+
+        var act = () => Guard.Argument(arg).UriHttpOrHttps();
+
+        act.ShouldNotThrow();
+    }
 }
 
 

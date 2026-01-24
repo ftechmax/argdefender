@@ -113,6 +113,60 @@ public static partial class Guard
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<double> Finite(
+        in this ArgumentInfo<double> argument, Func<double, string>? message = null)
+    {
+        if (!double.IsNaN(argument.Value) && !double.IsInfinity(argument.Value))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value) ?? Messages.Finite(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<double?> Finite(
+        in this ArgumentInfo<double?> argument, Func<double?, string>? message = null)
+    {
+        var value = argument.Value;
+        if (value == null || (!double.IsNaN(value.Value) && !double.IsInfinity(value.Value)))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(value) ?? Messages.Finite(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<double> NotFinite(
+        in this ArgumentInfo<double> argument, Func<double, string>? message = null)
+    {
+        if (double.IsNaN(argument.Value) || double.IsInfinity(argument.Value))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(argument.Value) ?? Messages.NotFinite(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref readonly ArgumentInfo<double?> NotFinite(
+        in this ArgumentInfo<double?> argument, Func<double?, string>? message = null)
+    {
+        var value = argument.Value;
+        if (value == null || double.IsNaN(value.Value) || double.IsInfinity(value.Value))
+        {
+            return ref argument;
+        }
+
+        var m = message?.Invoke(value) ?? Messages.NotFinite(argument);
+        throw new ArgumentException(m, argument.Name);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<double> PositiveInfinity(
         in this ArgumentInfo<double> argument, Func<double, string>? message = null)
     {

@@ -151,6 +151,27 @@ public class StringTests
     }
 
     [Test]
+    public void NotLength_Pass()
+    {
+        var arg = "abcd";
+
+        var act = () => Guard.Argument(arg).NotLength(arg.Length + 1);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void NotLength_Fail()
+    {
+        var arg = "abcd";
+
+        Action act = () => Guard.Argument(arg).NotLength(arg.Length);
+
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
     public void MinLength_Pass()
     {
         // Arrange
@@ -246,6 +267,16 @@ public class StringTests
     }
 
     [Test]
+    public void LengthInRange_Pass_WhenNull()
+    {
+        string? arg = null;
+
+        var act = () => Guard.Argument(arg).LengthInRange(1, 5);
+
+        act.ShouldNotThrow();
+    }
+
+    [Test]
     public void StartsWith_Pass()
     {
         // Arrange
@@ -266,6 +297,33 @@ public class StringTests
 
         // Act
         Action act = () => Guard.Argument(arg).StartsWith("xy");
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void StartsWith_Comparison_Pass()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        var act = () => Guard.Argument(arg).StartsWith("he", StringComparison.OrdinalIgnoreCase);
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void StartsWith_Comparison_Fail()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        Action act = () => Guard.Argument(arg).StartsWith("he", StringComparison.Ordinal);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentException>();
@@ -300,6 +358,33 @@ public class StringTests
     }
 
     [Test]
+    public void DoesNotStartWith_Comparison_Pass()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        var act = () => Guard.Argument(arg).DoesNotStartWith("xy", StringComparison.OrdinalIgnoreCase);
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void DoesNotStartWith_Comparison_Fail()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        Action act = () => Guard.Argument(arg).DoesNotStartWith("he", StringComparison.OrdinalIgnoreCase);
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
     public void EndsWith_Pass()
     {
         // Arrange
@@ -327,6 +412,33 @@ public class StringTests
     }
 
     [Test]
+    public void EndsWith_Comparison_Pass()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        var act = () => Guard.Argument(arg).EndsWith("LO", StringComparison.OrdinalIgnoreCase);
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void EndsWith_Comparison_Fail()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        Action act = () => Guard.Argument(arg).EndsWith("LO", StringComparison.Ordinal);
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
     public void DoesNotEndWith_Pass()
     {
         // Arrange
@@ -347,6 +459,141 @@ public class StringTests
 
         // Act
         Action act = () => Guard.Argument(arg).DoesNotEndWith("lo");
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void DoesNotEndWith_Comparison_Pass()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        var act = () => Guard.Argument(arg).DoesNotEndWith("XY", StringComparison.OrdinalIgnoreCase);
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void DoesNotEndWith_Comparison_Fail()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        Action act = () => Guard.Argument(arg).DoesNotEndWith("LO", StringComparison.OrdinalIgnoreCase);
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void Contains_Pass()
+    {
+        // Arrange
+        var arg = "hello world";
+
+        // Act
+        var act = () => Guard.Argument(arg).Contains("world");
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Contains_Fail()
+    {
+        // Arrange
+        var arg = "hello";
+
+        // Act
+        Action act = () => Guard.Argument(arg).Contains("world");
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void Contains_Comparison_Pass()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        var act = () => Guard.Argument(arg).Contains("he", StringComparison.OrdinalIgnoreCase);
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void Contains_Comparison_Fail()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        Action act = () => Guard.Argument(arg).Contains("he", StringComparison.Ordinal);
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void DoesNotContain_Pass()
+    {
+        // Arrange
+        var arg = "hello";
+
+        // Act
+        var act = () => Guard.Argument(arg).DoesNotContain("world");
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void DoesNotContain_Fail()
+    {
+        // Arrange
+        var arg = "hello world";
+
+        // Act
+        Action act = () => Guard.Argument(arg).DoesNotContain("world");
+
+        // Assert
+        var exception = act.ShouldThrow<ArgumentException>();
+        exception.Message.ShouldContain(nameof(arg));
+    }
+
+    [Test]
+    public void DoesNotContain_Comparison_Pass()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        var act = () => Guard.Argument(arg).DoesNotContain("he", StringComparison.Ordinal);
+
+        // Assert
+        act.ShouldNotThrow();
+    }
+
+    [Test]
+    public void DoesNotContain_Comparison_Fail()
+    {
+        // Arrange
+        var arg = "Hello";
+
+        // Act
+        Action act = () => Guard.Argument(arg).DoesNotContain("he", StringComparison.OrdinalIgnoreCase);
 
         // Assert
         var exception = act.ShouldThrow<ArgumentException>();

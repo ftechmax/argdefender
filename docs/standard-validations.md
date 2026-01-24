@@ -77,10 +77,20 @@ For `ArgumentInfo<TCollection>` where `TCollection : IEnumerable`:
 * `MinCount(int)`
 * `MaxCount(int)`
 * `CountInRange(int, int)`
+* `Contains(object)`
+* `DoesNotContain(object)`
 
 For `ArgumentInfo<TCollection>` where `TCollection : IEnumerable<TItem>`:
 * `Contains(TItem)`
 * `DoesNotContain(TItem)`
+* `Any(Func<TItem, bool>)`
+* `All(Func<TItem, bool>)`
+* `None(Func<TItem, bool>)`
+* `NoDuplicates()`
+* `NoDuplicates(IEqualityComparer<TItem>)`
+
+For `ArgumentInfo<TCollection>` where `TCollection : IEnumerable<TItem?>`:
+* `AllNotNull()`
 
 For `ArgumentInfo<T>`:
 * `In(IEnumerable)`
@@ -102,6 +112,14 @@ For `ArgumentInfo<string>`:
 * `DoesNotStartWith(string)`
 * `EndsWith(string)`
 * `DoesNotEndWith(string)`
+* `Contains(string)`
+* `DoesNotContain(string)`
+* `StartsWith(string, StringComparison)`
+* `DoesNotStartWith(string, StringComparison)`
+* `EndsWith(string, StringComparison)`
+* `DoesNotEndWith(string, StringComparison)`
+* `Contains(string, StringComparison)`
+* `DoesNotContain(string, StringComparison)`
 * `Matches(string)`
 * `MatchesTimeout(string, TimeSpan)`
 * `DoesNotMatch(string)`
@@ -130,6 +148,8 @@ For `ArgumentInfo<float>` and `ArgumentInfo<float?>`:
 * `NotNaN()`
 * `Infinity()`
 * `NotInfinity()`
+* `Finite()`
+* `NotFinite()`
 * `PositiveInfinity()`
 * `NotPositiveInfinity()`
 * `NegativeInfinity()`
@@ -142,6 +162,8 @@ For `ArgumentInfo<double>` and `ArgumentInfo<double?>`:
 * `NotNaN()`
 * `Infinity()`
 * `NotInfinity()`
+* `Finite()`
+* `NotFinite()`
 * `PositiveInfinity()`
 * `NotPositiveInfinity()`
 * `NegativeInfinity()`
@@ -178,6 +200,9 @@ For `ArgumentInfo<Uri>`:
 * `UriNotScheme(string)`
 * `UriHttp()`
 * `UriHttps()`
+* `UriHttpOrHttps()`
+* `UriHasHost()`
+* `UriPortInRange(int, int)`
 
 ### Email Guards
 
@@ -196,3 +221,9 @@ For `ArgumentInfo<T>`:
 * `NotType(Type)`
 * `Compatible<TArgument, TTarget>()`
 * `NotCompatible<TArgument, TTarget>()`
+
+### Predicate Guards
+
+For `ArgumentInfo<T>`
+* `Require(bool)`
+* `Require(Func<T, bool>)`
