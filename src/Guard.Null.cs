@@ -64,7 +64,7 @@ public static partial class Guard
     public static void NotAllNull<T1, T2>(
         in ArgumentInfo<T1> argument1, in ArgumentInfo<T2> argument2, Func<string, string, string>? message = null)
     {
-        if (argument1.Value != null || argument2.Value != null)
+        if (argument1.Value is not null || argument2.Value is not null)
         {
             return;
         }
@@ -81,7 +81,7 @@ public static partial class Guard
         in ArgumentInfo<T3> argument3,
         Func<string, string, string, string>? message = null)
     {
-        if (argument1.Value != null || argument2.Value != null || argument3.Value != null)
+        if (argument1.Value is not null || argument2.Value is not null || argument3.Value is not null)
         {
             return;
         }

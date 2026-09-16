@@ -14,12 +14,12 @@ public static partial class Guard
         }
 
         var value = argument.Value;
-        if (value != null && type.IsInstanceOfType(value))
+        if (value is not null && type.IsInstanceOfType(value))
         {
             return ref argument;
         }
 
-        var m = message?.Invoke(value, type) ?? Messages.Type(ToObjectArgument(argument), type);
+        var m = message?.Invoke(value, type) ?? Messages.Type(argument, type);
         throw new ArgumentException(m, argument.Name);
     }
 
@@ -33,12 +33,12 @@ public static partial class Guard
         }
 
         var value = argument.Value;
-        if (value == null || !type.IsInstanceOfType(value))
+        if (value is null || !type.IsInstanceOfType(value))
         {
             return ref argument;
         }
 
-        var m = message?.Invoke(value, type) ?? Messages.NotType(ToObjectArgument(argument), type);
+        var m = message?.Invoke(value, type) ?? Messages.NotType(argument, type);
         throw new ArgumentException(m, argument.Name);
     }
 
@@ -47,7 +47,7 @@ public static partial class Guard
         in this ArgumentInfo<TArgument> argument, Func<TArgument?, string>? message = null)
     {
         var value = argument.Value;
-        if (value != null && typeof(TTarget).IsInstanceOfType(value))
+        if (value is TTarget)
         {
             return ref argument;
         }
@@ -61,7 +61,7 @@ public static partial class Guard
         in this ArgumentInfo<TArgument> argument, Func<TArgument?, string>? message = null)
     {
         var value = argument.Value;
-        if (value == null || !typeof(TTarget).IsInstanceOfType(value))
+        if (value is not TTarget)
         {
             return ref argument;
         }
@@ -69,8 +69,4 @@ public static partial class Guard
         var m = message?.Invoke(value) ?? Messages.NotCompatible<TArgument, TTarget>(argument);
         throw new ArgumentException(m, argument.Name);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ArgumentInfo<object> ToObjectArgument<T>(in ArgumentInfo<T> argument)
-        => new(argument.Value!, modified: argument.Modified, secure: argument.Secure, name: argument.Name);
 }

@@ -20,23 +20,23 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Install DotNet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v4.2.0
+        uses: gittools/actions/gitversion/setup@v4.7.0
         with:
           versionSpec: '6.x'
 
       - name: Run GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v4.2.0
+        uses: gittools/actions/gitversion/execute@v4.7.0
         with:
           configFilePath: .github/gitversion.yaml
 
@@ -47,7 +47,7 @@ jobs:
         run: dotnet pack ./src/ArgDefender.csproj -p:PackageVersion=${{ steps.gitversion.outputs.MajorMinorPatch }} -c Release
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: ./TestResults/**/coverage.cobertura.xml
           fail_ci_if_error: true

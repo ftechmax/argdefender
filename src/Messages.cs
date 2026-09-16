@@ -5,17 +5,6 @@ namespace ArgDefender;
 
 internal static class Messages
 {
-    public static string State(string? caller)
-        => caller != null
-            ? $"{caller} call is not valid due to the current state of the object."
-            : "Operation is not valid due to the current state of the object.";
-
-    public static string Support(string? caller)
-        => caller != null ? $"{caller} is not supported" : "Specified method is not supported.";
-
-    public static string Disposal()
-        => "Cannot access a disposed object.";
-
     public static string Null<T>(in ArgumentInfo<T> argument)
         => $"{argument.Name} must be null.";
 
@@ -37,11 +26,11 @@ internal static class Messages
     public static string Equal<T>(in ArgumentInfo<T> argument, in T other)
         => argument.Secure ? Require(argument) : $"{argument.Name} must be {ToString(other)}.";
 
-    public static string NotEqual<T>(in ArgumentInfo<T> argument, in T other)
-        => argument.Secure ? Require(argument) : $"{argument.Name} cannot be {ToString(other)}.";
-
     public static string Equal<T>(in ArgumentInfo<T> argument, in T other, T delta)
         => argument.Secure ? Require(argument) : $"{argument.Name} must be within {delta} accuracy of {other}.";
+
+    public static string NotEqual<T>(in ArgumentInfo<T> argument, in T other)
+        => argument.Secure ? Require(argument) : $"{argument.Name} cannot be {ToString(other)}.";
 
     public static string NotEqual<T>(in ArgumentInfo<T> argument, in T other, T delta)
         => argument.Secure ? Require(argument) : $"{argument.Name} cannot be within {delta} accuracy of {other}.";
@@ -55,10 +44,10 @@ internal static class Messages
     public static string Require<T>(in ArgumentInfo<T> argument)
         => $"{argument.Name} is invalid.";
 
-    public static string Type(in ArgumentInfo<object> argument, Type type)
+    public static string Type<T>(in ArgumentInfo<T> argument, Type type)
         => $"{argument.Name} must be an instance of type {type}.";
 
-    public static string NotType(in ArgumentInfo<object> argument, Type type)
+    public static string NotType<T>(in ArgumentInfo<T> argument, Type type)
         => $"{argument.Name} cannot be an instance of type {type}.";
 
     public static string Compatible<TArgument, TTarget>(in ArgumentInfo<TArgument> argument)

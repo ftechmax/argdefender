@@ -10,7 +10,7 @@ public class StringTests
     [SetUp]
     public void Setup()
     {
-        _fixture = new Fixture();////.Customize(new AutoFakeItEasyCustomization());
+        _fixture = new Fixture();
     }
 
     [Test]
@@ -153,20 +153,26 @@ public class StringTests
     [Test]
     public void NotLength_Pass()
     {
+        // Arrange
         var arg = "abcd";
 
+        // Act
         var act = () => Guard.Argument(arg).NotLength(arg.Length + 1);
 
+        // Assert
         act.ShouldNotThrow();
     }
 
     [Test]
     public void NotLength_Fail()
     {
+        // Arrange
         var arg = "abcd";
 
+        // Act
         Action act = () => Guard.Argument(arg).NotLength(arg.Length);
 
+        // Assert
         var exception = act.ShouldThrow<ArgumentException>();
         exception.Message.ShouldContain(nameof(arg));
     }
@@ -269,10 +275,13 @@ public class StringTests
     [Test]
     public void LengthInRange_Pass_WhenNull()
     {
+        // Arrange
         string? arg = null;
 
+        // Act
         var act = () => Guard.Argument(arg).LengthInRange(1, 5);
 
+        // Assert
         act.ShouldNotThrow();
     }
 

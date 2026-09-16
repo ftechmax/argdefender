@@ -11,9 +11,9 @@ Fluent argument validation for .NET that keeps guard clauses readable and fast.
 Fail fast: validate inputs at your code boundaries so problems surface immediately, with clear exceptions to pinpoint the offending argument.
 
 - Fluent, chainable guards with clear exception types.
-- Null-tolerant for nullable inputs; add `NotNull()` when you need to enforce non-null.
+- Most guards tolerate null inputs; add `NotNull()` when you need to enforce non-null. See [null handling](docs/standard-validations.md#null-handling) for exceptions.
 - Automatic parameter names; `Guard.Argument(value)` captures the name so you do not need to pass strings via `nameof()`.
-- Optional `secure` mode redacts sensitive values from exception messages.
+- Optional `secure` mode redacts values from selected default messages (see below).
 
 ## Installation
 
@@ -23,7 +23,7 @@ dotnet add package ArgDefender
 
 ## Supported frameworks
 
-- net10
+- .NET 10 (`net10.0`)
 
 ## Quick start
 
@@ -36,7 +36,7 @@ public sealed class Person
     {
         Guard.Argument(name).NotNull().NotWhiteSpace();
         Guard.Argument(age).Min(0).Max(130);
-        Guard.Argument(homepage).UriAbsolute();
+        Guard.Argument(homepage).NotNull().UriAbsolute();
 
         Name = name;
         Age = age;
@@ -54,10 +54,10 @@ public sealed class Person
 ArgDefender throws standard exceptions with consistent, predefined messages:
 
 - Most guards throw `ArgumentException` and include the parameter name in the message.
-- Range/comparison guards (`Min`, `Max`, `InRange`, etc.) throw `ArgumentOutOfRangeException`.
+- Generic comparison guards (`Min`, `Max`, `InRange`, etc.) throw `ArgumentOutOfRangeException`. Length, collection-count, and URI-port checks throw `ArgumentException`.
 - Null enforcement (`NotNull`, `NotAllNull`) throws `ArgumentNullException`.
 
-For checks that would otherwise echo values, `secure: true` replaces the message with "`<name> is invalid.`".
+`secure: true` replaces default messages with "`<name> is invalid.`" for equality, string matching, collection membership, enum flag, and email host checks. For generic comparison guards, it also omits `ArgumentOutOfRangeException.ActualValue`. It does not redact every guard message or custom message callback.
 
 ## Examples
 
@@ -83,8 +83,23 @@ Guard.Argument(name).NotNull().NotWhiteSpace().MaxLength(40);
 ### Secure mode
 
 ```csharp
-Guard.Argument(apiKey, secure: true).NotNull().NotWhiteSpace().MinLength(32);
+using ArgDefender;
+
+var apiKey = "demo-invalid-key";
+foreach (var secure in new[] { false, true })
+{
+    try
+    {
+        Guard.Argument(apiKey, secure: secure).Equal("demo-expected-key");
+    }
+    catch (ArgumentException exception)
+    {
+        Console.WriteLine(exception.Message);
+    }
+}
 ```
+
+The default message text is `apiKey must be demo-expected-key.` without secure mode and `apiKey is invalid.` with it. The framework appends the parameter name to `exception.Message` (for example, `(Parameter 'apiKey')`).
 
 ### URI checks
 

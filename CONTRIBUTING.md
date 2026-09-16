@@ -1,42 +1,24 @@
 # Contributing to ArgDefender
 
-Thank you for considering to contribute to ArgDefender.
+## Bugs, features, and questions
 
-## Bug Reports
+[Report a bug][1] with a reproducible example and the expected behavior.
+[Discuss a feature][2] before implementing it so its scope and API can be agreed on.
 
-If you've found a bug, you can [report it here][1].
+For usage, see the [README](README.md) and [standard validations](docs/standard-validations.md).
+If those do not answer your question, [open a question][3].
 
-You can also make a pull request with the fix. If you'll submit a pull requests, see the
-[Code Contributions](#code-contributions) section below.
+## Code contributions
 
-## Feature Requests
+Use the .NET 10 SDK and follow [.editorconfig](.editorconfig).
+Include tests for behavior changes and run the test suite before submitting a pull request:
 
-If you have an idea that you want to see in ArgDefender, you can [suggest it here][2].
+```sh
+dotnet test ArgDefender.sln
+```
 
-You can also fork to demonstrate a proof-of-concept but don't put much effort into implementing a
-feature before discussing it in the suggestion issue, since the proposed design can change
-drastically after the discussion.
-
-See the [Code Contributions](#code-contributions) section below before submitting a pull request.
-
-## Questions
-
-The [design decisions][3], [standard validations][4] and [extensibility][5] documents should cover
-most of your questions regarding ArgDefender's usage and API design.
-
-You can always [ask here][6] if you can't find what you're looking for.
-
-## Code Contributions
-
-For all code contributions, make sure the unit tests are passing. 
-
-Coding styles are defined in .editorconfig. An [EditorConfig][7] supporting IDE like Visual Studio
-2017 or later should automatically enforce them.
+Describe the change and link the related issue in your pull request.
 
 [1]: https://github.com/ftechmax/argdefender/issues/new?template=bug_report.md
 [2]: https://github.com/ftechmax/argdefender/issues/new?template=feature_request.md
-[3]: docs/design-decisions.md
-[4]: docs/standard-validations.md
-[5]: docs/extensibility.md
-[6]: https://github.com/ftechmax/argdefender/issues/new?template=question.md
-[7]: https://editorconfig.org
+[3]: https://github.com/ftechmax/argdefender/issues/new?template=question.md

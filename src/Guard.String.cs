@@ -5,12 +5,13 @@ namespace ArgDefender;
 
 public static partial class Guard
 {
+    private static readonly TimeSpan DefaultMatchTimeout = TimeSpan.FromSeconds(1);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> Empty(
         in this ArgumentInfo<string> argument, Func<string, string>? message = null)
     {
-        if (!(argument.Value?.Length > 0))
+        if (string.IsNullOrEmpty(argument.Value))
         {
             return ref argument;
         }
@@ -18,7 +19,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value) ?? Messages.StringEmpty(argument);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> NotEmpty(
@@ -33,12 +33,11 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> WhiteSpace(
         in this ArgumentInfo<string> argument, Func<string, string>? message = null)
     {
-        if (argument.Value == null || string.IsNullOrWhiteSpace(argument.Value))
+        if (string.IsNullOrWhiteSpace(argument.Value))
         {
             return ref argument;
         }
@@ -46,7 +45,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value) ?? Messages.StringWhiteSpace(argument);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> NotWhiteSpace(
@@ -60,7 +58,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value) ?? Messages.StringNotWhiteSpace(argument);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> Length(
@@ -88,12 +85,11 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> MinLength(
         in this ArgumentInfo<string> argument, int minLength, Func<string, int, string>? message = null)
     {
-        if (!(argument.Value?.Length < minLength))
+        if (argument.Value == null || argument.Value.Length >= minLength)
         {
             return ref argument;
         }
@@ -102,12 +98,11 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> MaxLength(
         in this ArgumentInfo<string> argument, int maxLength, Func<string, int, string>? message = null)
     {
-        if (!(argument.Value?.Length > maxLength))
+        if (argument.Value == null || argument.Value.Length <= maxLength)
         {
             return ref argument;
         }
@@ -115,7 +110,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value, maxLength) ?? Messages.StringMaxLength(argument, maxLength);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> LengthInRange(
@@ -135,7 +129,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value, minLength, maxLength) ?? Messages.StringLengthInRange(argument, minLength, maxLength);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> StartsWith(
@@ -166,7 +159,6 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> DoesNotStartWith(
         in this ArgumentInfo<string> argument, string value, Func<string, string, string>? message = null)
@@ -195,7 +187,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value, value, comparisonType) ?? Messages.StringDoesNotStartWith(argument, value);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> EndsWith(
@@ -226,7 +217,6 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> DoesNotEndWith(
         in this ArgumentInfo<string> argument, string value, Func<string, string, string>? message = null)
@@ -255,7 +245,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value, value, comparisonType) ?? Messages.StringDoesNotEndWith(argument, value);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> Contains(
@@ -315,12 +304,11 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> Matches(
         in this ArgumentInfo<string> argument, string pattern, Func<string, string, string>? message = null)
     {
-        if (argument.Value == null || Regex.IsMatch(argument.Value, pattern))
+        if (argument.Value == null || Regex.IsMatch(argument.Value, pattern, RegexOptions.None, DefaultMatchTimeout))
         {
             return ref argument;
         }
@@ -328,7 +316,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value, pattern) ?? Messages.StringMatches(argument, pattern);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> MatchesTimeout(
@@ -343,12 +330,11 @@ public static partial class Guard
         throw new ArgumentException(m, argument.Name);
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> DoesNotMatch(
         in this ArgumentInfo<string> argument, string pattern, Func<string, string, string>? message = null)
     {
-        if (argument.Value == null || !Regex.IsMatch(argument.Value, pattern))
+        if (argument.Value == null || !Regex.IsMatch(argument.Value, pattern, RegexOptions.None, DefaultMatchTimeout))
         {
             return ref argument;
         }
@@ -356,7 +342,6 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value, pattern) ?? Messages.StringDoesNotMatch(argument, pattern);
         throw new ArgumentException(m, argument.Name);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref readonly ArgumentInfo<string> DoesNotMatchTimeout(
@@ -370,5 +355,4 @@ public static partial class Guard
         var m = message?.Invoke(argument.Value, pattern, matchTimeout) ?? Messages.StringDoesNotMatchTimeout(argument, pattern, matchTimeout);
         throw new ArgumentException(m, argument.Name);
     }
-
 }

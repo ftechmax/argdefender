@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,7 +7,7 @@ namespace ArgDefender;
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 [StructLayout(LayoutKind.Auto)]
-public readonly partial struct ArgumentInfo<T>
+public readonly struct ArgumentInfo<T>
 {
     private static readonly string DefaultName = $"The {typeof(T)} argument";
 
@@ -17,7 +18,7 @@ public readonly partial struct ArgumentInfo<T>
         T? value,
         bool modified = false,
         bool secure = false,
-        [CallerArgumentExpression("value")] string? name = null)
+        [CallerArgumentExpression(nameof(value))] string? name = null)
     {
         Value = value;
         _name = name;
@@ -33,6 +34,7 @@ public readonly partial struct ArgumentInfo<T>
 
     public bool Secure { get; }
 
+    [ExcludeFromCodeCoverage(Justification = "Only used by the debugger to display argument metadata.")]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal string DebuggerDisplay
     {

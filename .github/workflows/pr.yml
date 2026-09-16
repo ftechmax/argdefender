@@ -3,33 +3,39 @@ name: Pull request
 on:
   merge_group:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Tests
-    runs-on: [ubuntu-latest]
-    container: mcr.microsoft.com/dotnet/sdk:6.0-alpine
+  test:
+    name: Tests and package
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v6
         with:
-          fetch-depth: 0
+          dotnet-version: '10.0.x'
 
-      - name: Run dotnet test
-        run: dotnet test /p:CollectCoverage=true
+      - name: Run tests
+        run: dotnet test ./ArgDefender.sln --configuration Release
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
+      - name: Create package
+        run: dotnet pack ./src/ArgDefender.csproj --configuration Release --no-build
+
+  test-net11:
+    name: Tests (.NET 11)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v6
         with:
-          versionSpec: "5.x"
-          preferLatestVersion: true
+          dotnet-version: '11.0.x'
+          dotnet-quality: 'preview'
 
-      - name: Determine Version
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0
-        with:
-          useConfigFile: true
-
-      - name: Run dotnet pack
-        run: dotnet pack ./src/Guard.csproj -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} -c Release
+      - name: Run tests
+        run: dotnet test ./tests/ArgDefender.Test.csproj --configuration Release -p:TestTargetFramework=net11.0

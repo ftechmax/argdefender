@@ -8,7 +8,7 @@ public static partial class Guard
     public static ref readonly ArgumentInfo<T> Enum<T>(
         in this ArgumentInfo<T> argument, Func<T, string>? message = null) where T : struct, Enum
     {
-        if (global::System.Enum.IsDefined(typeof(T), argument.Value))
+        if (System.Enum.IsDefined(argument.Value))
         {
             return ref argument;
         }
@@ -21,7 +21,7 @@ public static partial class Guard
     public static ref readonly ArgumentInfo<T?> Enum<T>(
         in this ArgumentInfo<T?> argument, Func<T?, string>? message = null) where T : struct, Enum
     {
-        if (argument.Value is null || global::System.Enum.IsDefined(typeof(T), argument.Value.Value))
+        if (argument.Value is null || System.Enum.IsDefined(argument.Value.Value))
         {
             return ref argument;
         }
@@ -34,7 +34,7 @@ public static partial class Guard
     public static ref readonly ArgumentInfo<T> EnumDefined<T>(
         in this ArgumentInfo<T> argument, Func<T, string>? message = null) where T : struct, Enum
     {
-        if (global::System.Enum.IsDefined(typeof(T), argument.Value))
+        if (System.Enum.IsDefined(argument.Value))
         {
             return ref argument;
         }
@@ -47,7 +47,7 @@ public static partial class Guard
     public static ref readonly ArgumentInfo<T?> EnumDefined<T>(
         in this ArgumentInfo<T?> argument, Func<T?, string>? message = null) where T : struct, Enum
     {
-        if (argument.Value is null || global::System.Enum.IsDefined(typeof(T), argument.Value.Value))
+        if (argument.Value is null || System.Enum.IsDefined(argument.Value.Value))
         {
             return ref argument;
         }
@@ -112,9 +112,7 @@ public static partial class Guard
     public static ref readonly ArgumentInfo<T> EnumHasFlag<T>(
         in this ArgumentInfo<T> argument, T flag, Func<T, T, string>? message = null) where T : struct, Enum
     {
-        var valueEnum = (global::System.Enum)(object)argument.Value;
-        var flagEnum = (global::System.Enum)(object)flag;
-        if (valueEnum.HasFlag(flagEnum))
+        if (argument.Value.HasFlag(flag))
         {
             return ref argument;
         }
@@ -132,9 +130,7 @@ public static partial class Guard
             return ref argument;
         }
 
-        var valueEnum = (global::System.Enum)(object)argument.Value.Value;
-        var flagEnum = (global::System.Enum)(object)flag;
-        if (valueEnum.HasFlag(flagEnum))
+        if (argument.Value.Value.HasFlag(flag))
         {
             return ref argument;
         }
@@ -147,9 +143,7 @@ public static partial class Guard
     public static ref readonly ArgumentInfo<T> EnumDoesNotHaveFlag<T>(
         in this ArgumentInfo<T> argument, T flag, Func<T, T, string>? message = null) where T : struct, Enum
     {
-        var valueEnum = (global::System.Enum)(object)argument.Value;
-        var flagEnum = (global::System.Enum)(object)flag;
-        if (!valueEnum.HasFlag(flagEnum))
+        if (!argument.Value.HasFlag(flag))
         {
             return ref argument;
         }
@@ -167,9 +161,7 @@ public static partial class Guard
             return ref argument;
         }
 
-        var valueEnum = (global::System.Enum)(object)argument.Value.Value;
-        var flagEnum = (global::System.Enum)(object)flag;
-        if (!valueEnum.HasFlag(flagEnum))
+        if (!argument.Value.Value.HasFlag(flag))
         {
             return ref argument;
         }

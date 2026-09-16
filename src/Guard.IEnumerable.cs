@@ -11,7 +11,7 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null || !HasAny(value))
+        if (value is null || !HasAny(value))
         {
             return ref argument;
         }
@@ -26,12 +26,7 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
-        {
-            return ref argument;
-        }
-
-        if (HasAny(value))
+        if (value is null || HasAny(value))
         {
             return ref argument;
         }
@@ -46,12 +41,12 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
 
-        var actual = TryGetCount(value, out var knownCount) ? knownCount : CountAll(value);
+        var actual = value is ICollection collection ? collection.Count : CountAll(value);
         if (actual == count)
         {
             return ref argument;
@@ -67,12 +62,12 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
 
-        var actual = TryGetCount(value, out var knownCount) ? knownCount : CountAll(value);
+        var actual = value is ICollection collection ? collection.Count : CountAll(value);
         if (actual != count)
         {
             return ref argument;
@@ -88,12 +83,12 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
 
-        if (TryGetCount(value, out var knownCount) ? knownCount >= minCount : CountUpTo(value, minCount) >= minCount)
+        if (value is ICollection collection ? collection.Count >= minCount : CountUpTo(value, minCount) >= minCount)
         {
             return ref argument;
         }
@@ -108,12 +103,7 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
-        {
-            return ref argument;
-        }
-
-        if (TryGetCount(value, out var knownCount) ? knownCount <= maxCount : CountUpTo(value, maxCount) <= maxCount)
+        if (value is null || (value is ICollection collection ? collection.Count <= maxCount : CountUpTo(value, maxCount) <= maxCount))
         {
             return ref argument;
         }
@@ -128,13 +118,13 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
 
-        var withinRange = TryGetCount(value, out var knownCount)
-            ? knownCount >= minCount && knownCount <= maxCount
+        var withinRange = value is ICollection { Count: var count }
+            ? count >= minCount && count <= maxCount
             : CountInRangeInternal(value, minCount, maxCount);
 
         if (withinRange)
@@ -152,7 +142,7 @@ public static partial class Guard
         where TCollection : IEnumerable<TItem>
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -177,7 +167,7 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -209,7 +199,7 @@ public static partial class Guard
         where TCollection : IEnumerable<TItem>
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -234,7 +224,7 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -273,7 +263,7 @@ public static partial class Guard
         }
 
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -303,7 +293,7 @@ public static partial class Guard
         }
 
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -333,7 +323,7 @@ public static partial class Guard
         }
 
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -356,7 +346,7 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -379,7 +369,7 @@ public static partial class Guard
         where TCollection : IEnumerable
     {
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -410,7 +400,7 @@ public static partial class Guard
         }
 
         var value = argument.Value;
-        if (value == null)
+        if (value is null)
         {
             return ref argument;
         }
@@ -437,7 +427,7 @@ public static partial class Guard
             throw new ArgumentNullException(nameof(collection));
         }
 
-        if (argument.Value == null)
+        if (argument.Value is null)
         {
             return ref argument;
         }
@@ -457,8 +447,7 @@ public static partial class Guard
             }
         }
 
-        var itemsForMessage = (IEnumerable)snapshot;
-        var m = message?.Invoke(argument.Value, itemsForMessage) ?? Messages.InCollection(argument, itemsForMessage);
+        var m = message?.Invoke(argument.Value, snapshot) ?? Messages.InCollection(argument, snapshot);
         throw new ArgumentException(m, argument.Name);
     }
 
@@ -471,7 +460,7 @@ public static partial class Guard
             throw new ArgumentNullException(nameof(collection));
         }
 
-        if (argument.Value == null)
+        if (argument.Value is null)
         {
             return ref argument;
         }
@@ -487,8 +476,7 @@ public static partial class Guard
 
             if (item is T candidate && comparer.Equals(argument.Value, candidate))
             {
-                var itemsForMessage = (IEnumerable)snapshot;
-                var m = message?.Invoke(argument.Value, itemsForMessage) ?? Messages.NotInCollection(argument, itemsForMessage);
+                var m = message?.Invoke(argument.Value, snapshot) ?? Messages.NotInCollection(argument, snapshot);
                 throw new ArgumentException(m, argument.Name);
             }
         }
@@ -507,18 +495,6 @@ public static partial class Guard
         {
             (enumerator as IDisposable)?.Dispose();
         }
-    }
-
-    private static bool TryGetCount(IEnumerable collection, out int count)
-    {
-        if (collection is ICollection col)
-        {
-            count = col.Count;
-            return true;
-        }
-
-        count = 0;
-        return false;
     }
 
     private static int CountAll(IEnumerable collection)
